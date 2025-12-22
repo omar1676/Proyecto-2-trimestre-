@@ -4,17 +4,19 @@ public class Cubles {
 
     private int id;
     private String nombre;
-    private int edad;
+    private int fundacion;
     private  String presidente;
     private int primerEquipo;
     private  String Jugadores[];
     private int numeroCantera;
-    private String JugadoresCantera [];
-    public Cubles(int id, String nombre, int edad, String posicion, String presidente) {
+    private String jugadoresCantera [];
+    public Cubles(int id, String nombre, int fundacion, String presidente, int primerEquipo, int numeroCantera) {
         this.id = id;
         this.nombre = nombre;
-        this.edad = edad;
+        this.fundacion = fundacion;
         this.presidente = presidente;
+        this.primerEquipo = primerEquipo;
+        this.numeroCantera = numeroCantera;
     }
 
     public int getId() {
@@ -26,16 +28,24 @@ public class Cubles {
     }
 
     public int getEdad() {
-        return edad;
+        return fundacion;
     }
 
     public String getPresidente() {
         return presidente;
     }
 
+    public int getPrimerEquipo() {
+        return primerEquipo;
+    }
+
+    public int getNumeroCantera() {
+        return numeroCantera;
+    }
+
     @Override
     public String toString() {
-        return nombre + " " + edad + " " + id + " " + presidente;
+        return nombre + " " + fundacion + " " + id + " " + presidente + " " + primerEquipo + " " + numeroCantera;
     }
 }
 
