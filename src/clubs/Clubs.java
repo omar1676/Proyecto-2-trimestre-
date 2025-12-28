@@ -1,6 +1,6 @@
-package cubles;
+package clubs;
 
-public class Cubles {
+public class Clubs {
 
     private int id;
     private String nombre;
@@ -8,15 +8,17 @@ public class Cubles {
     private String presidente;
     private int numeroCantera;
     private int jugadoresEnEquipo;
+    private long patrimonioClub;
 
 
-    public Cubles(int id, String nombre, int fundacion, String presidente, int numeroCantera, int jugadoresEnEquipo) {
+    public Clubs(int id, String nombre, int fundacion, String presidente, int numeroCantera, int jugadoresEnEquipo, long patrimonioClub) {
         this.id = id;
         this.nombre = nombre;
         this.fundacion = fundacion;
         this.presidente = presidente;
         this.numeroCantera = numeroCantera;
         this.jugadoresEnEquipo = jugadoresEnEquipo;
+        this.patrimonioClub = patrimonioClub;
     }
 
     public int getId() {
@@ -43,9 +45,13 @@ public class Cubles {
         return jugadoresEnEquipo;
     }
 
+    public long getPatrimonioClub() {
+        return patrimonioClub;
+    }
+
     @Override
     public String toString() {
-        return nombre + " " + fundacion + " " + id + " " + presidente + " " + numeroCantera + " " + jugadoresEnEquipo;
+        return nombre + " " + fundacion + " " + presidente + " " + numeroCantera + " " + jugadoresEnEquipo +  " " + patrimonioClub;
     }
 }
 
