@@ -1,6 +1,6 @@
-package cubles;
+package clubes;
 
-public class Cubles {
+public class Clubes {
 
     private int id;
     private String nombre;
@@ -10,7 +10,7 @@ public class Cubles {
     private  String Jugadores[];
     private int numeroCantera;
     private String jugadoresCantera [];
-    public Cubles(int id, String nombre, int fundacion, String presidente, int primerEquipo, int numeroCantera) {
+    public Clubes(int id, String nombre, int fundacion, String presidente, int primerEquipo, int numeroCantera) {
         this.id = id;
         this.nombre = nombre;
         this.fundacion = fundacion;
