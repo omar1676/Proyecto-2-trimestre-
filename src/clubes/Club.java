@@ -56,6 +56,44 @@ public class Club {
         return true;
     }
 
+    public void mostrarPlantilla() {
+
+        System.out.println(
+                "┌───────────────────────────────────────────────┐\n" +
+                        "│                  PLANTILLA                    │\n" +
+                        "└───────────────────────────────────────────────┘"
+        );
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println();
+        }
+
+        System.out.println(
+                "┌───────────────────────────────────────────────┐\n" +
+                        "│-----------" + nombre + "-----------------│\n" +
+                        "├───────────────────────────────────────────────┤\n" +
+                        "│                 PRIMER EQUIPO                 │"
+        );
+
+        for (int i = 0; i < numPrimerEquipo; i++) {
+            System.out.println(
+                    "│-----------" + primerEquipo[i] + "-----------------│"
+            );
+        }
+
+        System.out.println(
+                "├───────────────────────────────────────────────┤\n" +
+                        "│                 CANTERA                       │"
+        );
+
+        for (int i = 0; i < numCantera; i++) {
+            System.out.println(
+                    "│-----------" + cantera[i] + "-----------------│"
+            );
+        }
+    }
+
+
     public int getId() {
         return id;
     }
