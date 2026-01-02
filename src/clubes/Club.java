@@ -36,7 +36,7 @@ public class Club {
         if (jugador == null) {
             return false;
         }
-        if (this.numPrimerEquipo >= 30) {
+        if (numPrimerEquipo >= primerEquipo.length) {
             return false;
         }
         primerEquipo[numPrimerEquipo] = jugador;
@@ -48,7 +48,7 @@ public class Club {
         if (jugador == null) {
             return false;
         }
-        if (this.numPrimerEquipo >= 50) {
+        if ((numCantera >= cantera.length)) {
             return false;
         }
         cantera[numCantera] = jugador;
