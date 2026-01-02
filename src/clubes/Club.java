@@ -93,20 +93,21 @@ public class Club {
         }
     }
 
-    public Jugador buscarPorDorsal(int dorsal) {
-
+    public Jugador buscarPorDorsalPrimerEquipo(int dorsal) {
         for (int i = 0; i < numPrimerEquipo; i++) {
             if (primerEquipo[i].getDorsal() == dorsal) {
                 return primerEquipo[i];
             }
         }
+        return null;
+    }
 
+    public Jugador buscarPorDorsalCantera(int dorsal) {
         for (int i = 0; i < numCantera; i++) {
             if (cantera[i].getDorsal() == dorsal) {
                 return cantera[i];
             }
         }
-
         return null;
     }
 
