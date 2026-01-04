@@ -9,17 +9,25 @@ public class Main {
 
     public static void main(String[] args) {
 
-
         Club c1 = new Club(1, "Alavés", 1930, "Omar", 30, 30);
-
 
         Jugador j1 = new Jugador(1, "Antonio Sivera", 29, "POR", 6.0, 78);
         Jugador j2 = new Jugador(3, "Raúl Fernández", 37, "POR", 0.2, 71);
 
 
+        j1.setTemporada("2025/26");
+        j1.setPartidos(18);
+        j1.setMinutos(1620);
+        j1.setPorteriasCero(6);
+        j1.setAmarillas(1);
+
+        j2.setTemporada("2025/26");
+        j2.setPartidos(6);
+        j2.setMinutos(540);
+        j2.setPorteriasCero(2);
+
         c1.añadirPrimerEquipo(j1);
         c1.añadirPrimerEquipo(j2);
-
 
         menu(c1);
     }
@@ -75,7 +83,8 @@ public class Main {
 
                                 if (encontrado != null) {
                                     System.out.println("\nJugador encontrado:");
-                                    System.out.println(encontrado);
+
+                                    encontrado.datosTransferMarket();
                                 } else {
                                     System.out.println("\nNo existe ningún jugador con ese dorsal en esa plantilla.");
                                 }

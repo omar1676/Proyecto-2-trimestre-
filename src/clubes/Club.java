@@ -57,7 +57,7 @@ public class Club {
     }
 
     public void mostrarPlantilla() {
-        final int INNER = 63; // ancho interior del recuadro (ajústalo si quieres)
+        final int INNER = 63;
         final String TOP = "┌" + "─".repeat(INNER) + "┐";
         final String MID = "├" + "─".repeat(INNER) + "┤";
         final String BOT = "└" + "─".repeat(INNER) + "┘";
@@ -67,11 +67,11 @@ public class Club {
         System.out.println("│" + center(nombre + "  |  Fundado: " + fundacion + "  |  Presidente: " + presidente, INNER) + "│");
         System.out.println(BOT);
 
-        System.out.println(); // espacio
+        System.out.println();
 
         imprimirSeccion("PRIMER EQUIPO (" + numPrimerEquipo + ")", primerEquipo, numPrimerEquipo, INNER);
 
-        System.out.println(); // espacio
+        System.out.println();
 
         imprimirSeccion("CANTERA (" + numCantera + ")", cantera, numCantera, INNER);
     }
@@ -85,7 +85,7 @@ public class Club {
         System.out.println("│" + center(titulo, INNER) + "│");
         System.out.println(MID);
 
-        // Cabecera tabla
+
         String header = " DOR  " + col("NOMBRE", 26) + "  " + col("POS", 3) + "  " + col("ED", 2) + "  " + colR("€M", 6) + "  " + colR("VAL", 3);
         System.out.println("│" + col(header, INNER) + "│");
         System.out.println(MID);
@@ -99,7 +99,7 @@ public class Club {
         for (int i = 0; i < num; i++) {
             Jugador j = lista[i];
 
-            // Fila formateada (sin toString largo)
+
             String fila =
                     " " + colR(String.valueOf(j.getDorsal()), 3) + "  " +
                             col(j.getNombre(), 26) + "  " +
@@ -114,7 +114,7 @@ public class Club {
         System.out.println(BOT);
     }
 
-    // ---- helpers de formato ----
+
     private static String col(String s, int len) {
         return String.format("%-" + len + "." + len + "s", s == null ? "" : s);
     }
