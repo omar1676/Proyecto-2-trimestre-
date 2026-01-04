@@ -9,10 +9,42 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Club c1 = new Club(1, "Alavés", 1930, "Omar", 30, 30);
+        Club c1 = new Club(1, "Alavés", 1930, "Omar", 30, 50);
 
-        Jugador j1 = new Jugador(1, "Antonio Sivera", 29, "POR", 6.0, 78);
-        Jugador j2 = new Jugador(3, "Raúl Fernández", 37, "POR", 0.2, 71);
+
+        Jugador j1  = new Jugador(1,  "Antonio Sivera",   29, "POR", 6.0, 78);
+        Jugador j2  = new Jugador(13, "Raúl Fernández",   37, "POR", 0.2, 71);
+
+
+        Jugador j3  = new Jugador(5,  "Jon Pacheco",      24, "DFC", 5.0, 74);
+        Jugador j4  = new Jugador(22, "Moussa Diarra",    25, "DFC", 1.5, 70);
+        Jugador j5  = new Jugador(12, "Nikola Maras",     30, "DFC", 0.8, 69);
+
+        Jugador j6  = new Jugador(2,  "Facundo Garcés",   26, "DFC", 0.0, 70);
+
+        Jugador j7  = new Jugador(3,  "Youssef Enríquez", 20, "LI",  5.0, 73);
+        Jugador j8  = new Jugador(24, "Victor Parada",    23, "LI",  2.0, 71);
+        Jugador j9  = new Jugador(14, "Nahuel Tenaglia",  29, "LD",  3.0, 74);
+        Jugador j10 = new Jugador(17, "Jonny Otto",       31, "LD",  2.5, 72);
+
+
+        Jugador j11 = new Jugador(8,  "Antonio Blanco",   25, "MCD", 10.0, 78);
+        Jugador j12 = new Jugador(23, "Carlos Protesoni", 27, "MCD", 1.0, 70);
+        Jugador j13 = new Jugador(6,  "Ander Guevara",    28, "MC",  3.0, 73);
+        Jugador j14 = new Jugador(10, "Carles Aleñá",     27, "MC",  3.0, 74);
+        Jugador j15 = new Jugador(19, "Pablo Ibáñez",     27, "MC",  3.0, 73);
+        Jugador j16 = new Jugador(18, "Jon Guridi",       30, "MC",  2.5, 73);
+
+        Jugador j17 = new Jugador(20, "Calebe",           25, "MCO", 2.0, 72);
+        Jugador j18 = new Jugador(4,  "Denis Suárez",     31, "MCO", 1.2, 73);
+
+
+        Jugador j19 = new Jugador(21, "Abde Rebbach",     27, "EI",  1.5, 71);
+        Jugador j20 = new Jugador(7,  "Carlos Vicente",  26, "ED",  7.0, 76);
+
+        Jugador j21 = new Jugador(15, "Lucas Boyé",       29, "DC",  5.0, 75);
+        Jugador j22 = new Jugador(11, "Toni Martínez",    28, "DC",  3.5, 74);
+        Jugador j23 = new Jugador(9,  "Mariano Díaz",     32, "DC",  0.8, 70);
 
 
         j1.setTemporada("2025/26");
@@ -28,9 +60,31 @@ public class Main {
 
         c1.añadirPrimerEquipo(j1);
         c1.añadirPrimerEquipo(j2);
+        c1.añadirPrimerEquipo(j3);
+        c1.añadirPrimerEquipo(j4);
+        c1.añadirPrimerEquipo(j5);
+        c1.añadirPrimerEquipo(j6);
+        c1.añadirPrimerEquipo(j7);
+        c1.añadirPrimerEquipo(j8);
+        c1.añadirPrimerEquipo(j9);
+        c1.añadirPrimerEquipo(j10);
+        c1.añadirPrimerEquipo(j11);
+        c1.añadirPrimerEquipo(j12);
+        c1.añadirPrimerEquipo(j13);
+        c1.añadirPrimerEquipo(j14);
+        c1.añadirPrimerEquipo(j15);
+        c1.añadirPrimerEquipo(j16);
+        c1.añadirPrimerEquipo(j17);
+        c1.añadirPrimerEquipo(j18);
+        c1.añadirPrimerEquipo(j19);
+        c1.añadirPrimerEquipo(j20);
+        c1.añadirPrimerEquipo(j21);
+        c1.añadirPrimerEquipo(j22);
+        c1.añadirPrimerEquipo(j23);
 
         menu(c1);
     }
+
 
     static void menu(Club club) {
 
@@ -120,6 +174,6 @@ public class Main {
 
         } while (opcionMenu != 4);
 
-        sc.close();
+
     }
 }
