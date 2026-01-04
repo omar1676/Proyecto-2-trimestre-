@@ -27,29 +27,90 @@ public class Main {
     static void menu(Club club) {
 
         Scanner sc = new Scanner(System.in);
-        int opcion;
+        int opcionMenu;
 
         do {
-            System.out.println("1. Ver plantilla");
+            System.out.println("\n1. Ver plantilla");
             System.out.println("2. Opcion 2");
             System.out.println("3. Opcion 3");
             System.out.println("4. Salir");
             System.out.print("Elige una opción: ");
 
-            opcion = sc.nextInt();
+            opcionMenu = sc.nextInt();
 
-            if (opcion == 1) {
+            if (opcionMenu == 1) {
+
                 club.mostrarPlantilla();
-            } else if (opcion == 2) {
+
+                int opcionPlantilla;
+                do {
+                    System.out.println("\n¿Qué plantilla quieres consultar?");
+                    System.out.println("1. Primer equipo");
+                    System.out.println("2. Cantera");
+                    System.out.println("3. Volver al menú principal");
+                    System.out.print("Elige: ");
+                    opcionPlantilla = sc.nextInt();
+
+                    if (opcionPlantilla == 1 || opcionPlantilla == 2) {
+
+                        int opcionEstadisticas;
+                        do {
+                            System.out.println("\n¿Quieres ver las estadísticas de algún jugador?");
+                            System.out.println("1. Sí");
+                            System.out.println("2. No");
+                            System.out.print("Elige: ");
+                            opcionEstadisticas = sc.nextInt();
+
+                            if (opcionEstadisticas == 1) {
+
+                                System.out.print("Introduce dorsal: ");
+                                int dorsal = sc.nextInt();
+
+                                Jugador encontrado;
+                                if (opcionPlantilla == 1) {
+                                    encontrado = club.buscarPorDorsalPrimerEquipo(dorsal);
+                                } else {
+                                    encontrado = club.buscarPorDorsalCantera(dorsal);
+                                }
+
+                                if (encontrado != null) {
+                                    System.out.println("\nJugador encontrado:");
+                                    System.out.println(encontrado);
+                                } else {
+                                    System.out.println("\nNo existe ningún jugador con ese dorsal en esa plantilla.");
+                                }
+
+                            } else if (opcionEstadisticas == 2) {
+
+                            } else {
+                                System.out.println("Opción no válida.");
+                            }
+
+                        } while (opcionEstadisticas != 2);
+
+                    } else if (opcionPlantilla == 3) {
+                        System.out.println("Volviendo al menú principal...");
+                    } else {
+                        System.out.println("Opción incorrecta.");
+                    }
+
+                } while (opcionPlantilla != 3);
+
+            } else if (opcionMenu == 2) {
                 System.out.println("Partidos (en desarrollo)");
-            } else if (opcion == 3) {
+
+            } else if (opcionMenu == 3) {
                 System.out.println("Porcentaje (en desarrollo)");
-            } else if (opcion == 4) {
+
+            } else if (opcionMenu == 4) {
                 System.out.println("Saliendo del programa...");
+
             } else {
                 System.out.println("Opción incorrecta");
             }
 
-        } while (opcion != 4);
+        } while (opcionMenu != 4);
+
+        sc.close();
     }
 }

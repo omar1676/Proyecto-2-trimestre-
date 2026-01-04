@@ -57,40 +57,78 @@ public class Club {
     }
 
     public void mostrarPlantilla() {
+        final int INNER = 63; // ancho interior del recuadro (ajústalo si quieres)
+        final String TOP = "┌" + "─".repeat(INNER) + "┐";
+        final String MID = "├" + "─".repeat(INNER) + "┤";
+        final String BOT = "└" + "─".repeat(INNER) + "┘";
 
-        System.out.println(
-                "┌───────────────────────────────────────────────┐\n" +
-                        "│                  PLANTILLA                    │\n" +
-                        "└───────────────────────────────────────────────┘"
-        );
+        System.out.println(TOP);
+        System.out.println("│" + center("PLANTILLA", INNER) + "│");
+        System.out.println("│" + center(nombre + "  |  Fundado: " + fundacion + "  |  Presidente: " + presidente, INNER) + "│");
+        System.out.println(BOT);
 
-        for (int i = 0; i < 5; i++) {
-            System.out.println();
+        System.out.println(); // espacio
+
+        imprimirSeccion("PRIMER EQUIPO (" + numPrimerEquipo + ")", primerEquipo, numPrimerEquipo, INNER);
+
+        System.out.println(); // espacio
+
+        imprimirSeccion("CANTERA (" + numCantera + ")", cantera, numCantera, INNER);
+    }
+
+    private void imprimirSeccion(String titulo, Jugador[] lista, int num, int INNER) {
+        final String TOP = "┌" + "─".repeat(INNER) + "┐";
+        final String MID = "├" + "─".repeat(INNER) + "┤";
+        final String BOT = "└" + "─".repeat(INNER) + "┘";
+
+        System.out.println(TOP);
+        System.out.println("│" + center(titulo, INNER) + "│");
+        System.out.println(MID);
+
+        // Cabecera tabla
+        String header = " DOR  " + col("NOMBRE", 26) + "  " + col("POS", 3) + "  " + col("ED", 2) + "  " + colR("€M", 6) + "  " + colR("VAL", 3);
+        System.out.println("│" + col(header, INNER) + "│");
+        System.out.println(MID);
+
+        if (num == 0) {
+            System.out.println("│" + center("(sin jugadores)", INNER) + "│");
+            System.out.println(BOT);
+            return;
         }
 
-        System.out.println(
-                "┌───────────────────────────────────────────────┐\n" +
-                        "│-----------" + nombre + "-----------------│\n" +
-                        "├───────────────────────────────────────────────┤\n" +
-                        "│                 PRIMER EQUIPO                 │"
-        );
+        for (int i = 0; i < num; i++) {
+            Jugador j = lista[i];
 
-        for (int i = 0; i < numPrimerEquipo; i++) {
-            System.out.println(
-                    "│-----------" + primerEquipo[i] + "-----------------│"
-            );
+            // Fila formateada (sin toString largo)
+            String fila =
+                    " " + colR(String.valueOf(j.getDorsal()), 3) + "  " +
+                            col(j.getNombre(), 26) + "  " +
+                            col(j.getPosicion(), 3) + "  " +
+                            colR(String.valueOf(j.getEdad()), 2) + "  " +
+                            colR(String.format("%.1f", j.getValorMercado()), 6) + "  " +
+                            colR(String.valueOf(j.getValoracion()), 3);
+
+            System.out.println("│" + col(fila, INNER) + "│");
         }
 
-        System.out.println(
-                "├───────────────────────────────────────────────┤\n" +
-                        "│                 CANTERA                       │"
-        );
+        System.out.println(BOT);
+    }
 
-        for (int i = 0; i < numCantera; i++) {
-            System.out.println(
-                    "│-----------" + cantera[i] + "-----------------│"
-            );
-        }
+    // ---- helpers de formato ----
+    private static String col(String s, int len) {
+        return String.format("%-" + len + "." + len + "s", s == null ? "" : s);
+    }
+
+    private static String colR(String s, int len) {
+        return String.format("%" + len + "." + len + "s", s == null ? "" : s);
+    }
+
+    private static String center(String s, int len) {
+        s = (s == null) ? "" : s;
+        if (s.length() > len) s = s.substring(0, len);
+        int left = (len - s.length()) / 2;
+        int right = len - s.length() - left;
+        return " ".repeat(left) + s + " ".repeat(right);
     }
 
     public Jugador buscarPorDorsalPrimerEquipo(int dorsal) {
