@@ -9,10 +9,14 @@ public class Club {
     private int fundacion;
     private String presidente;
 
+    private int titulosLiga;
+    private int titulosCopaRey;
+    private int titulosChampions;
+    private int titulosSupercopa;
+    private int titulosMundialito;
 
     private Jugador[] primerEquipo;
     private int numPrimerEquipo;
-
 
     private Jugador[] cantera;
     private int numCantera;
@@ -30,27 +34,43 @@ public class Club {
 
         this.numPrimerEquipo = 0;
         this.numCantera = 0;
+
+        this.titulosLiga = 0;
+        this.titulosCopaRey = 0;
+        this.titulosChampions = 0;
+        this.titulosSupercopa = 0;
+        this.titulosMundialito = 0;
+    }
+
+    public void setPalmares(int liga, int copaRey, int champions, int supercopa, int mundialito) {
+        this.titulosLiga = liga;
+        this.titulosCopaRey = copaRey;
+        this.titulosChampions = champions;
+        this.titulosSupercopa = supercopa;
+        this.titulosMundialito = mundialito;
+    }
+
+    public String resumenPalmares() {
+        return "Liga:" + titulosLiga +
+                " | Copa:" + titulosCopaRey +
+                " | UCL:" + titulosChampions +
+                " | Sup:" + titulosSupercopa +
+                " | Mundial:" + titulosMundialito;
     }
 
     public boolean añadirPrimerEquipo(Jugador jugador) {
-        if (jugador == null) {
-            return false;
-        }
-        if (numPrimerEquipo >= primerEquipo.length) {
-            return false;
-        }
+        if (jugador == null) return false;
+        if (numPrimerEquipo >= primerEquipo.length) return false;
+
         primerEquipo[numPrimerEquipo] = jugador;
         numPrimerEquipo++;
         return true;
     }
 
     public boolean añadirCantera(Jugador jugador) {
-        if (jugador == null) {
-            return false;
-        }
-        if ((numCantera >= cantera.length)) {
-            return false;
-        }
+        if (jugador == null) return false;
+        if (numCantera >= cantera.length) return false;
+
         cantera[numCantera] = jugador;
         numCantera++;
         return true;
@@ -85,7 +105,6 @@ public class Club {
         System.out.println("│" + center(titulo, INNER) + "│");
         System.out.println(MID);
 
-
         String header = " DOR  " + col("NOMBRE", 26) + "  " + col("POS", 3) + "  " + col("ED", 2) + "  " + colR("€M", 6) + "  " + colR("VAL", 3);
         System.out.println("│" + col(header, INNER) + "│");
         System.out.println(MID);
@@ -98,7 +117,6 @@ public class Club {
 
         for (int i = 0; i < num; i++) {
             Jugador j = lista[i];
-
 
             String fila =
                     " " + colR(String.valueOf(j.getDorsal()), 3) + "  " +
@@ -113,6 +131,60 @@ public class Club {
 
         System.out.println(BOT);
     }
+
+    public void mostrarFichaClub() {
+        final int INNER = 63;
+        final String TOP = "┌" + "─".repeat(INNER) + "┐";
+        final String MID = "├" + "─".repeat(INNER) + "┤";
+        final String BOT = "└" + "─".repeat(INNER) + "┘";
+
+        System.out.println(TOP);
+        System.out.println("│" + center("FICHA DEL CLUB", INNER) + "│");
+        System.out.println("│" + center(nombre + "  |  Fundado: " + fundacion + "  |  Presidente: " + presidente, INNER) + "│");
+        System.out.println(BOT);
+
+        System.out.println();
+
+        System.out.println(TOP);
+        System.out.println("│" + center("PALMARÉS", INNER) + "│");
+        System.out.println(MID);
+
+        String header = " " + col("TÍTULO", 40) + "  " + colR("TOTAL", 6);
+        System.out.println("│" + col(header, INNER) + "│");
+        System.out.println(MID);
+
+        imprimirTitulo("LIGA", titulosLiga, INNER);
+        imprimirTitulo("COPA DEL REY", titulosCopaRey, INNER);
+        imprimirTitulo("CHAMPIONS", titulosChampions, INNER);
+        imprimirTitulo("SUPERCOPA", titulosSupercopa, INNER);
+        imprimirTitulo("MUNDIALITO", titulosMundialito, INNER);
+
+        System.out.println(BOT);
+        System.out.println();
+    }
+
+    private void imprimirTitulo(String nombreTitulo, int total, int INNER) {
+        String fila = " " + col(nombreTitulo, 40) + "  " + colR(String.valueOf(total), 6);
+        System.out.println("│" + col(fila, INNER) + "│");
+    }
+    public Jugador buscarPrimerEquipo(int dorsal) {
+        for (int i = 0; i < numPrimerEquipo; i++) {
+            if (primerEquipo[i] != null && primerEquipo[i].getDorsal() == dorsal) {
+                return primerEquipo[i];
+            }
+        }
+        return null;
+    }
+
+    public Jugador buscarCantera(int dorsal) {
+        for (int i = 0; i < numCantera; i++) {
+            if (cantera[i] != null && cantera[i].getDorsal() == dorsal) {
+                return cantera[i];
+            }
+        }
+        return null;
+    }
+
 
 
     private static String col(String s, int len) {
@@ -133,46 +205,29 @@ public class Club {
 
     public Jugador buscarPorDorsalPrimerEquipo(int dorsal) {
         for (int i = 0; i < numPrimerEquipo; i++) {
-            if (primerEquipo[i].getDorsal() == dorsal) {
-                return primerEquipo[i];
-            }
+            if (primerEquipo[i].getDorsal() == dorsal) return primerEquipo[i];
         }
         return null;
     }
 
     public Jugador buscarPorDorsalCantera(int dorsal) {
         for (int i = 0; i < numCantera; i++) {
-            if (cantera[i].getDorsal() == dorsal) {
-                return cantera[i];
-            }
+            if (cantera[i].getDorsal() == dorsal) return cantera[i];
         }
         return null;
     }
 
-
-    public int getId() {
-        return id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public int getFundacion() {
-        return fundacion;
-    }
-
-    public String getPresidente() {
-        return presidente;
-    }
-
-    public int getNumPrimerEquipo() {
-        return numPrimerEquipo;
-    }
-
-    public int getNumCantera() {
-        return numCantera;
-    }
+    public int getId() { return id; }
+    public String getNombre() { return nombre; }
+    public int getFundacion() { return fundacion; }
+    public String getPresidente() { return presidente; }
+    public int getNumPrimerEquipo() { return numPrimerEquipo; }
+    public int getNumCantera() { return numCantera; }
+    public int getLiga() {return titulosLiga;}
+    public int getCopa() {return titulosCopaRey;}
+    public int getUcl() {return titulosChampions;}
+    public int getSupercopa() {return titulosSupercopa;}
+    public int getMundial() {return titulosMundialito;}
 
     @Override
     public String toString() {
