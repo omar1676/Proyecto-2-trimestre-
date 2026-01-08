@@ -10,9 +10,18 @@ public class Main {
     public static void main(String[] args) {
 
         Club[] clubes = crearClubes();
-        cargarAlaves(clubes[0]);
-        cargarRealMadrid(clubes[14]);
+
+        cargarAlaves(buscarClubPorId(clubes, 1));
+        cargarRealMadrid(buscarClubPorId(clubes, 15));
         menu(clubes);
+    }
+
+    static Club buscarClubPorId(Club[] clubes, int id) {
+        if (clubes == null) return null;
+        for (Club c : clubes) {
+            if (c != null && c.getId() == id) return c;
+        }
+        return null;
     }
 
     static Club[] crearClubes() {
@@ -68,6 +77,8 @@ public class Main {
     }
 
     static void cargarAlaves(Club alaves) {
+
+        if (alaves == null) return;
 
         Jugador j1 = new Jugador(1, "Antonio Sivera", 29, "POR", 6.0, 78);
         j1.setTemporada("2024/25");
@@ -372,6 +383,8 @@ public class Main {
 
 
     static void cargarRealMadrid(Club madrid) {
+
+        if (madrid == null) return;
 
         Jugador j1 = new Jugador(1, "Thibaut Courtois", 33, "POR", 18.0, 88);
         j1.setTemporada("2024/25");

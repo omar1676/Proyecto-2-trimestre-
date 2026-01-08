@@ -186,7 +186,6 @@ public class Club {
     }
 
 
-
     private static String col(String s, int len) {
         return String.format("%-" + len + "." + len + "s", s == null ? "" : s);
     }
@@ -201,20 +200,6 @@ public class Club {
         int left = (len - s.length()) / 2;
         int right = len - s.length() - left;
         return " ".repeat(left) + s + " ".repeat(right);
-    }
-
-    public Jugador buscarPorDorsalPrimerEquipo(int dorsal) {
-        for (int i = 0; i < numPrimerEquipo; i++) {
-            if (primerEquipo[i].getDorsal() == dorsal) return primerEquipo[i];
-        }
-        return null;
-    }
-
-    public Jugador buscarPorDorsalCantera(int dorsal) {
-        for (int i = 0; i < numCantera; i++) {
-            if (cantera[i].getDorsal() == dorsal) return cantera[i];
-        }
-        return null;
     }
 
     public int getId() { return id; }
