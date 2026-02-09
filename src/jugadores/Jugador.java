@@ -148,7 +148,6 @@ public class Jugador {
         int right = len - s.length() - left;
         return " ".repeat(left) + s + " ".repeat(right);
     }
-
     private static String lineTop(int inner) {
         return "┌" + "─".repeat(inner) + "┐";
     }
