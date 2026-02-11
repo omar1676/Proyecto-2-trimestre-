@@ -1,6 +1,6 @@
 package competicion;
 
-public abstract class Competicion {
+public class Competicion {
 
     private String nombre;
     private boolean generada;
@@ -17,14 +17,24 @@ public abstract class Competicion {
     }
 
 
-    public abstract void generar();
+    public void generar() {
 
-    public abstract boolean simularRonda(boolean verEnDirecto);
+        setGenerada(true);
+    }
 
-    public abstract void mostrarUltimosResultados();
+    public boolean simularRonda(boolean verEnDirecto) {
 
-    public abstract boolean haTerminado();
+        return false;
+    }
 
+    public void mostrarUltimosResultados() {
+
+        System.out.println("No hay resultados (competición base).");
+    }
+
+    public boolean haTerminado() {
+        return isTerminada();
+    }
 
     public String getNombre() {
         return nombre;
@@ -49,7 +59,6 @@ public abstract class Competicion {
     public static boolean validarNombre(String nombre) {
         return nombre != null && !nombre.trim().isEmpty();
     }
-
 
     public void mostrarEstado() {
         System.out.println("\n==============================");
