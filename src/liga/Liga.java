@@ -174,7 +174,7 @@ public class Liga extends Competicion {
                     jornadas[jornadasIda + numJornada][numPartido] = null;
                 } else {
                     jornadas[jornadasIda + numJornada][numPartido] =
-                            new Partido(partidoIda.getVisitante(), partidoIda.getLocal());
+                            new Partido(partidoIda.getEquipoVisitante(), partidoIda.getEquipoLocal());
                 }
             }
         }
@@ -225,6 +225,70 @@ public class Liga extends Competicion {
 
                 if (numResultadosUltimaJornada < resultadosUltimaJornada.length) {
                     resultadosUltimaJornada[numResultadosUltimaJornada] = partido.toString();
+                    numResultadosUltimaJornada++;
+                }
+            }
+        }
+
+        System.out.println("\nRESULTADOS:");
+        for (int i = 0; i < numResultadosUltimaJornada; i++) {
+            System.out.println(" - " + resultadosUltimaJornada[i]);
+        }
+
+        jornadaEnCurso++;
+
+        if (jornadaEnCurso >= totalJornadas) {
+            setTerminada(true);
+            System.out.println("\nFin de temporada: se han jugado todas las jornadas.");
+        }
+
+        return true;
+    }
+
+    public boolean simularRonda(Club clubSeguido, boolean verEnDirectoSeguido) {
+
+        if (!isGenerada()) generar();
+
+        if (haTerminado()) {
+            System.out.println("La liga ya terminó.");
+            return false;
+        }
+
+        if (jornadaEnCurso >= totalJornadas) {
+            setTerminada(true);
+            System.out.println("Temporada completada.");
+            return false;
+        }
+
+        System.out.println("\n------------------------------------------");
+        System.out.println(getNombre().toUpperCase() + " | JORNADA " + (jornadaEnCurso + 1) + "/" + totalJornadas);
+        if (clubSeguido != null) {
+            System.out.println("MODO CARRERA | Equipo seguido: " + clubSeguido.getNombre());
+        }
+        System.out.println("------------------------------------------");
+
+        Partido[] listaPartidos = jornadas[jornadaEnCurso];
+        numResultadosUltimaJornada = 0;
+
+        if (listaPartidos != null) {
+            for (int i = 0; i < listaPartidos.length; i++) {
+                Partido partido = listaPartidos[i];
+                if (partido == null) continue;
+
+                boolean verEsteEnDirecto = false;
+                if (verEnDirectoSeguido && clubSeguido != null && partido.participa(clubSeguido)) {
+                    verEsteEnDirecto = true;
+                }
+
+                partido.simular(verEsteEnDirecto);
+                actualizarTabla(partido);
+
+                if (numResultadosUltimaJornada < resultadosUltimaJornada.length) {
+                    String texto = partido.toString();
+                    if (clubSeguido != null && partido.participa(clubSeguido)) {
+                        texto = "SEGUIDO - " + texto;
+                    }
+                    resultadosUltimaJornada[numResultadosUltimaJornada] = texto;
                     numResultadosUltimaJornada++;
                 }
             }
@@ -316,16 +380,16 @@ public class Liga extends Competicion {
     }
 
     private void actualizarTabla(Partido partido) {
-        Club local = partido.getLocal();
-        Club visitante = partido.getVisitante();
+        Club local = partido.getEquipoLocal();
+        Club visitante = partido.getEquipoVisitante();
 
         int idxLocal = indiceEquipo(local);
         int idxVisitante = indiceEquipo(visitante);
 
         if (idxLocal < 0 || idxVisitante < 0) return;
 
-        int gLocal = partido.getGolesLocal();
-        int gVisitante = partido.getGolesVisitante();
+        int gLocal = partido.getGolesDelLocal();
+        int gVisitante = partido.getGolesDelVisitante();
 
         jugados[idxLocal]++;
         jugados[idxVisitante]++;
