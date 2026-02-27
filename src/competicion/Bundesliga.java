@@ -20,6 +20,8 @@ public class Bundesliga extends Competicion {
 
     private String[] resultadosUltimaJornada;
     private int numResultadosUltimaJornada;
+    private Club[] ganadoresUltimaJornada;
+    private int numGanadoresUltimaJornada;
 
     private Random rnd;
 
@@ -99,6 +101,8 @@ public class Bundesliga extends Competicion {
         if (tam <= 0) tam = 1;
         this.resultadosUltimaJornada = new String[tam];
         this.numResultadosUltimaJornada = 0;
+        this.ganadoresUltimaJornada = new Club[tam];
+        this.numGanadoresUltimaJornada = 0;
     }
 
     @Override
@@ -195,6 +199,8 @@ public class Bundesliga extends Competicion {
                 }
             }
         }
+        this.ganadoresUltimaJornada = new Club[partidosPorJornada];
+        this.numGanadoresUltimaJornada = 0;
 
         this.resultadosUltimaJornada = new String[partidosPorJornada];
         this.numResultadosUltimaJornada = 0;
@@ -213,6 +219,7 @@ public class Bundesliga extends Competicion {
     @Override
     public boolean simularRonda(boolean verEnDirecto) {
         if (!isGenerada()) generar();
+        numGanadoresUltimaJornada = 0;
 
         if (haTerminado()) {
             System.out.println("La liga ya terminó.");
@@ -265,6 +272,7 @@ public class Bundesliga extends Competicion {
     public boolean simularRonda(Club clubSeguido, boolean verEnDirectoSeguido) {
 
         if (!isGenerada()) generar();
+        numGanadoresUltimaJornada = 0;
 
         if (haTerminado()) {
             System.out.println("La liga ya terminó.");
@@ -299,6 +307,7 @@ public class Bundesliga extends Competicion {
 
                 partido.simular(verEsteEnDirecto);
                 actualizarTabla(partido);
+                registrarGanador(partido);
 
                 if (numResultadosUltimaJornada < resultadosUltimaJornada.length) {
                     String texto = partido.toString();
@@ -489,6 +498,34 @@ public class Bundesliga extends Competicion {
         if (s == null) return "";
         if (s.length() <= max) return s;
         return s.substring(0, max);
+    }
+
+    private void registrarGanador(Partido partido) {
+        if (partido == null) return;
+
+        Club ganador = null;
+
+        if (partido.getGolesDelLocal() > partido.getGolesDelVisitante()) {
+            ganador = partido.getEquipoLocal();
+        } else if (partido.getGolesDelLocal() < partido.getGolesDelVisitante()) {
+            ganador = partido.getEquipoVisitante();
+        }
+
+        if (ganador == null) return;
+        if (ganadoresUltimaJornada == null) return;
+        if (numGanadoresUltimaJornada >= ganadoresUltimaJornada.length) return;
+
+        ganadoresUltimaJornada[numGanadoresUltimaJornada] = ganador;
+        numGanadoresUltimaJornada++;
+    }
+
+    @Override
+    public Club[] getGanadoresUltimaJornada() {
+        Club[] res = new Club[numGanadoresUltimaJornada];
+        for (int i = 0; i < numGanadoresUltimaJornada; i++) {
+            res[i] = ganadoresUltimaJornada[i];
+        }
+        return res;
     }
 
     @Override

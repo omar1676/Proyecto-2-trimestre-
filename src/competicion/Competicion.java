@@ -1,5 +1,7 @@
 package competicion;
 
+import clubes.Club;
+
 public class Competicion {
 
     private String nombre;
@@ -66,6 +68,10 @@ public class Competicion {
         System.out.println("Generada: " + generada);
         System.out.println("Terminada: " + terminada);
         System.out.println("==============================\n");
+    }
+
+    public Club[] getGanadoresUltimaJornada() {
+        return new Club[0];
     }
 
     @Override

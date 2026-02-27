@@ -1,19 +1,14 @@
 package main;
 
 import clubes.Club;
-import competicion.Competicion;
-import competicion.Liga;
-import competicion.PremierLeague;
-import competicion.Ligue1;
-import competicion.Bundesliga;
-import competicion.SerieA;
+import competicion.*;
 import jugadores.Jugador;
 
 import java.util.Scanner;
 
 public class Menu {
 
-    public static void mostrar(Club[] clubes, Competicion competicion) {
+    public static void mostrar(Club[] clubes, Competicion competicion, EuropaLeague europa) {
         Scanner sc = new Scanner(System.in);
 
         Club clubActual = null;
@@ -37,6 +32,9 @@ public class Menu {
             if (clubSeguido == null) System.out.println("EQUIPO SEGUIDO: -");
             else System.out.println("EQUIPO SEGUIDO: " + clubSeguido.getNombre());
 
+            if (europa == null) System.out.println("EUROPA LEAGUE (SIM): -");
+            else System.out.println("EUROPA LEAGUE (SIM): " + europa.getTotalEquipos() + " equipos");
+
             System.out.println("==============================");
             System.out.println("1. Elegir club actual");
             System.out.println("2. Ver plantilla (club actual)");
@@ -48,8 +46,13 @@ public class Menu {
             System.out.println("7. Simular 1 jornada (solo equipo seguido en directo)");
             System.out.println("8. Ver ultima jornada");
             System.out.println("9. Ver clasificacion");
-            System.out.println("10. Elegir otras Ligas");
             System.out.println("------------------------------");
+            System.out.println("11. Ver equipos clasificados a Europa League (sim)");
+            System.out.println("12. Simular 1 jornada Europa League (sim)");
+            System.out.println("13. Ver ultima jornada Europa League (sim)");
+            System.out.println("14. Ver clasificacion Europa League (sim)");
+            System.out.println("------------------------------");
+            System.out.println("10. Elegir otras Ligas");
             System.out.println("0. Salir");
             System.out.print("Opcion: ");
 
@@ -124,12 +127,13 @@ public class Menu {
                         clubSeguido = elegirClub(sc, clubes);
                     }
 
-                    // Si no hay equipo seguido, simulación normal
                     if (clubSeguido == null) {
                         competicion.simularRonda(false);
                     } else {
                         simularConEquipoSeguido(competicion, clubSeguido, false);
                     }
+
+                    añadirGanadoresAEuropa(competicion, europa);
                 }
 
             } else if (opcion == 7) {
@@ -146,6 +150,8 @@ public class Menu {
                         System.out.println("No se ha seleccionado equipo seguido.");
                     } else {
                         simularConEquipoSeguido(competicion, clubSeguido, true);
+
+                        añadirGanadoresAEuropa(competicion, europa);
                     }
                 }
 
@@ -162,10 +168,32 @@ public class Menu {
                     mostrarClasificacionSiExiste(competicion);
                 }
 
+            } else if (opcion == 11) {
+
+                if (europa == null) System.out.println("No hay Europa League (sim).");
+                else europa.mostrarEquipos();
+
+            } else if (opcion == 12) {
+
+                if (europa == null) {
+                    System.out.println("No hay Europa League (sim).");
+                } else {
+                    europa.simularRonda(false);
+                }
+
+            } else if (opcion == 13) {
+
+                if (europa == null) System.out.println("No hay Europa League (sim).");
+                else europa.mostrarUltimosResultados();
+
+            } else if (opcion == 14) {
+
+                if (europa == null) System.out.println("No hay Europa League (sim).");
+                else europa.mostrarClasificacion();
+
             } else if (opcion == 10) {
 
-                System.out.println("Eligiendo otras Ligas...");
-                Main.main(null);
+                return;
 
             } else if (opcion == 0) {
 
@@ -178,7 +206,22 @@ public class Menu {
         }
     }
 
-    // --- Helpers para no duplicar if/instanceof ---
+    private static void añadirGanadoresAEuropa(Competicion competicion, EuropaLeague europa) {
+        if (competicion == null || europa == null) return;
+
+        Club[] ganadores = competicion.getGanadoresUltimaJornada();
+        int añadidos = 0;
+
+        for (int i = 0; i < ganadores.length; i++) {
+            if (europa.añadirEquipo(ganadores[i])) {
+                añadidos++;
+            }
+        }
+
+        if (añadidos > 0) {
+            System.out.println(">> Europa League (sim): se han añadido " + añadidos + " equipos.");
+        }
+    }
 
     private static void simularConEquipoSeguido(Competicion competicion, Club seguido, boolean enDirecto) {
 
@@ -224,8 +267,6 @@ public class Menu {
             System.out.println("Esta competicion no tiene clasificacion.");
         }
     }
-
-    // --- Lo demás igual que lo tenías ---
 
     private static Club elegirClub(Scanner sc, Club[] clubes) {
         if (clubes == null || clubes.length == 0) {
