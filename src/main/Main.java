@@ -1,12 +1,7 @@
 package main;
 
 import clubes.Club;
-import competicion.Competicion;
-import competicion.Liga;
-import competicion.PremierLeague;
-import competicion.SerieA;
-import competicion.Bundesliga;
-import competicion.Ligue1;
+import competicion.*;
 import datos.CargadorDatos;
 
 import java.util.Scanner;
@@ -22,10 +17,13 @@ public class Main {
         System.out.println("3) Serie A");
         System.out.println("4) Bundesliga");
         System.out.println("5) Ligue 1");
+        System.out.println("6) Supercopa de España");
+        System.out.println("7) Segunda División");
+        System.out.println("8) Copa de España");
         System.out.print("Opción: ");
 
         int opcion = sc.nextInt();
-        sc.nextLine(); // IMPORTANTE: consume el salto de línea
+        sc.nextLine();
 
         Club[] clubesElegidos = null;
         Competicion competicionElegida = null;
@@ -54,6 +52,29 @@ public class Main {
             case 5:
                 clubesElegidos = CargadorDatos.crearClubesLigue1();
                 competicionElegida = new Ligue1("Ligue 1 2024/25", clubesElegidos);
+                break;
+
+            case 6:
+                Club[] todosLosClubes = CargadorDatos.crearClubesConPlantillas();
+                clubesElegidos = new Club[4];
+                for (int i = 0; i < 4; i++) {
+                    clubesElegidos[i] = todosLosClubes[i];
+                }
+                competicionElegida = new Supercopa("Supercopa de España", clubesElegidos);
+                break;
+
+            case 7:
+                clubesElegidos = CargadorDatos.crearClubesHypermotion();
+                competicionElegida = new SegundaDivision("LaLiga Hypermotion", clubesElegidos);
+                break;
+
+            case 8:
+                Club[] p1 = CargadorDatos.crearClubesConPlantillas();
+                Club[] p2 = CargadorDatos.crearClubesHypermotion();
+                clubesElegidos = new Club[p1.length + p2.length];
+                System.arraycopy(p1, 0, clubesElegidos, 0, p1.length);
+                System.arraycopy(p2, 0, clubesElegidos, p1.length, p2.length);
+                competicionElegida = new Copa("Copa de España 2024/25", clubesElegidos);
                 break;
 
             default:

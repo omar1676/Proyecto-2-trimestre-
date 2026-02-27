@@ -340,8 +340,77 @@ public class CargadorDatos {
         return clubes;
     }
 
+    // ========================================================
+    //   LALIGA HYPERMOTION / COPA DEL REY
+    // ========================================================
+    public static Club[] crearClubesHypermotion() {
 
+        Club lasPalmas = new Club(601, "UD Las Palmas", 1949, "Presidente", 30, 50);
+        Club leganes = new Club(602, "CD Leganés", 1928, "Presidente", 30, 50);
+        Club valladolid = new Club(603, "Real Valladolid", 1928, "Presidente", 30, 50);
+        Club almeria = new Club(604, "UD Almería", 1989, "Presidente", 30, 50);
+        Club granada = new Club(605, "Granada CF", 1931, "Presidente", 30, 50);
+        Club cadiz = new Club(606, "Cádiz CF", 1910, "Presidente", 30, 50);
+        Club eibar = new Club(607, "SD Eibar", 1940, "Presidente", 30, 50);
+        Club sporting = new Club(608, "Real Sporting de Gijón", 1905, "Presidente", 30, 50);
+        Club racing = new Club(609, "Racing de Santander", 1913, "Presidente", 30, 50);
+        Club burgos = new Club(610, "Burgos CF", 1985, "Presidente", 30, 50);
+        Club racingFerrol = new Club(611, "Racing de Ferrol", 1919, "Presidente", 30, 50);
+        Club tenerife = new Club(612, "CD Tenerife", 1922, "Presidente", 30, 50);
+        Club albacete = new Club(613, "Albacete Balompié", 1940, "Presidente", 30, 50);
+        Club zaragoza = new Club(614, "Real Zaragoza", 1932, "Presidente", 30, 50);
+        Club cartagena = new Club(615, "FC Cartagena", 1995, "Presidente", 30, 50);
+        Club mirandes = new Club(616, "CD Mirandés", 1927, "Presidente", 30, 50);
+        Club eldense = new Club(617, "CD Eldense", 1921, "Presidente", 30, 50);
+        Club huesca = new Club(618, "SD Huesca", 1960, "Presidente", 30, 50);
+        Club castellon = new Club(619, "CD Castellón", 1922, "Presidente", 30, 50);
+        Club deportivo = new Club(620, "Deportivo de La Coruña", 1906, "Presidente", 30, 50);
+        Club malaga = new Club(621, "Málaga CF", 1904, "Presidente", 30, 50);
+        Club cordoba = new Club(622, "Córdoba CF", 1954, "Presidente", 30, 50);
 
+        // --- PALMARÉS SEGUNDA ---
+        lasPalmas.setPalmares(0, 0, 0, 0, 0);
+        leganes.setPalmares(0, 0, 0, 0, 0);
+        valladolid.setPalmares(0, 0, 0, 0, 0);
+        almeria.setPalmares(0, 0, 0, 0, 0);
+        granada.setPalmares(0, 0, 0, 0, 0);
+        cadiz.setPalmares(0, 0, 0, 0, 0);
+        eibar.setPalmares(0, 0, 0, 0, 0);
+        sporting.setPalmares(0, 0, 0, 0, 0);
+        racing.setPalmares(0, 0, 0, 0, 0);
+        burgos.setPalmares(0, 0, 0, 0, 0);
+        racingFerrol.setPalmares(0, 0, 0, 0, 0);
+        tenerife.setPalmares(0, 0, 0, 0, 0);
+        albacete.setPalmares(0, 0, 0, 0, 0);
+        zaragoza.setPalmares(0, 6, 0, 1, 0);
+        cartagena.setPalmares(0, 0, 0, 0, 0);
+        mirandes.setPalmares(0, 0, 0, 0, 0);
+        eldense.setPalmares(0, 0, 0, 0, 0);
+        huesca.setPalmares(0, 0, 0, 0, 0);
+        castellon.setPalmares(0, 0, 0, 0, 0);
+        deportivo.setPalmares(1, 2, 0, 3, 0);
+        malaga.setPalmares(0, 0, 0, 0, 0);
+        cordoba.setPalmares(0, 0, 0, 0, 0);
+
+        Club[] clubes = new Club[]{
+                lasPalmas, leganes, valladolid, almeria, granada, cadiz,
+                eibar, sporting, racing, burgos, racingFerrol, tenerife,
+                albacete, zaragoza, cartagena, mirandes, eldense, huesca,
+                castellon, deportivo, malaga, cordoba
+        };
+
+        for (Club c : clubes) {
+            if (c != null) c.setNombresTrofeos(
+                    "LaLigaHypermotion",
+                    "Copa del Rey",
+                    "Champions League",
+                    "Supercopa de España",
+                    "Mundial de Clubes"
+            );
+        }
+
+        return clubes;
+    }
 
     private static void cargarAlaves(Club alaves) {
         if (alaves == null) return;

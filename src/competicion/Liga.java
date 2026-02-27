@@ -473,6 +473,25 @@ public class Liga extends Competicion {
         return s.substring(0, max);
     }
 
+    public Club getEquipoEnPosicion(int pos) {
+        if (pos < 1 || pos > totalEquipos) return null;
+
+        int[] orden = new int[totalEquipos];
+        for (int i = 0; i < totalEquipos; i++) orden[i] = i;
+
+        for (int i = 0; i < totalEquipos - 1; i++) {
+            int mejor = i;
+            for (int j = i + 1; j < totalEquipos; j++) {
+                if (esMejor(orden[j], orden[mejor])) mejor = j;
+            }
+            int aux = orden[i];
+            orden[i] = orden[mejor];
+            orden[mejor] = aux;
+        }
+
+        return equipos[orden[pos - 1]];
+    }
+
     @Override
     public String toString() {
         return "Liga{" +

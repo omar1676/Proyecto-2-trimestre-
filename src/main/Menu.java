@@ -1,12 +1,7 @@
 package main;
 
 import clubes.Club;
-import competicion.Competicion;
-import competicion.Liga;
-import competicion.PremierLeague;
-import competicion.Ligue1;
-import competicion.Bundesliga;
-import competicion.SerieA;
+import competicion.*;
 import jugadores.Jugador;
 
 import java.util.Scanner;
@@ -46,7 +41,7 @@ public class Menu {
             System.out.println("5. Elegir equipo a seguir");
             System.out.println("6. Simular 1 jornada (rapido)");
             System.out.println("7. Simular 1 jornada (solo equipo seguido en directo)");
-            System.out.println("8. Ver ultima jornada");
+            System.out.println("8. Simular hasta el final");
             System.out.println("9. Ver clasificacion");
             System.out.println("10. Elegir otras Ligas");
             System.out.println("------------------------------");
@@ -57,7 +52,7 @@ public class Menu {
 
             if (opcion == 1) {
 
-                clubActual = elegirClub(sc, clubes);
+                clubActual = elegirClub(sc, clubes, competicion);
                 if (clubActual != null) clubActual.mostrarFichaClub();
 
             } else if (opcion == 2) {
@@ -109,7 +104,7 @@ public class Menu {
 
             } else if (opcion == 5) {
 
-                clubSeguido = elegirClub(sc, clubes);
+                clubSeguido = elegirClub(sc, clubes, competicion);
                 if (clubSeguido != null) {
                     System.out.println("Equipo seguido: " + clubSeguido.getNombre());
                 }
@@ -121,7 +116,7 @@ public class Menu {
                 } else {
                     if (clubSeguido == null) {
                         System.out.println("Elige primero el equipo que quieres seguir (opcion 5).");
-                        clubSeguido = elegirClub(sc, clubes);
+                        clubSeguido = elegirClub(sc, clubes, competicion);
                     }
 
                     // Si no hay equipo seguido, simulación normal
@@ -129,6 +124,19 @@ public class Menu {
                         competicion.simularRonda(false);
                     } else {
                         simularConEquipoSeguido(competicion, clubSeguido, false);
+                    }
+                    
+                    // Comprobar eliminación tras simular (SOLO SI NO HA TERMINADO EL TORNEO)
+                    if (clubSeguido != null && !competicion.haTerminado()) {
+                        if (competicion instanceof Copa && !((Copa)competicion).sigueVivo(clubSeguido)) {
+                            System.out.println("\n¡TU EQUIPO (" + clubSeguido.getNombre() + ") HA SIDO ELIMINADO!");
+                            System.out.println("Debes elegir un nuevo equipo para seguir.");
+                            clubSeguido = elegirClub(sc, clubes, competicion);
+                        } else if (competicion instanceof Supercopa && !((Supercopa)competicion).sigueVivo(clubSeguido)) {
+                            System.out.println("\n¡TU EQUIPO (" + clubSeguido.getNombre() + ") HA SIDO ELIMINADO!");
+                            System.out.println("Debes elegir un nuevo equipo para seguir.");
+                            clubSeguido = elegirClub(sc, clubes, competicion);
+                        }
                     }
                 }
 
@@ -139,20 +147,57 @@ public class Menu {
                 } else {
                     if (clubSeguido == null) {
                         System.out.println("Elige primero el equipo que quieres seguir (opcion 5).");
-                        clubSeguido = elegirClub(sc, clubes);
+                        clubSeguido = elegirClub(sc, clubes, competicion);
                     }
 
                     if (clubSeguido == null) {
                         System.out.println("No se ha seleccionado equipo seguido.");
                     } else {
                         simularConEquipoSeguido(competicion, clubSeguido, true);
+                        
+                        // Comprobar eliminación tras simular en directo (SOLO SI NO HA TERMINADO EL TORNEO)
+                        if (clubSeguido != null && !competicion.haTerminado()) {
+                            if (competicion instanceof Copa && !((Copa)competicion).sigueVivo(clubSeguido)) {
+                                System.out.println("\n¡TU EQUIPO (" + clubSeguido.getNombre() + ") HA SIDO ELIMINADO!");
+                                System.out.println("Debes elegir un nuevo equipo para seguir.");
+                                clubSeguido = elegirClub(sc, clubes, competicion);
+                            } else if (competicion instanceof Supercopa && !((Supercopa)competicion).sigueVivo(clubSeguido)) {
+                                System.out.println("\n¡TU EQUIPO (" + clubSeguido.getNombre() + ") HA SIDO ELIMINADO!");
+                                System.out.println("Debes elegir un nuevo equipo para seguir.");
+                                clubSeguido = elegirClub(sc, clubes, competicion);
+                            }
+                        }
                     }
                 }
 
             } else if (opcion == 8) {
 
-                if (competicion == null) System.out.println("No hay competicion creada.");
-                else competicion.mostrarUltimosResultados();
+                if (competicion == null) {
+                    System.out.println("No hay competicion creada.");
+                } else {
+                    System.out.println("\n>>> SIMULANDO HASTA EL FINAL DE " + competicion.getNombre().toUpperCase() + " <<<");
+                    while (!competicion.haTerminado()) {
+                        if (clubSeguido == null) {
+                            competicion.simularRonda(false);
+                        } else {
+                            simularConEquipoSeguido(competicion, clubSeguido, false);
+                        }
+                        
+                        // Si tras simular una ronda el equipo seguido es eliminado, forzar cambio
+                        if (clubSeguido != null && !competicion.haTerminado()) {
+                            if (competicion instanceof Copa && !((Copa)competicion).sigueVivo(clubSeguido)) {
+                                System.out.println("\n¡TU EQUIPO (" + clubSeguido.getNombre() + ") HA SIDO ELIMINADO!");
+                                System.out.println("Debes elegir un nuevo equipo para seguir.");
+                                clubSeguido = elegirClub(sc, clubes, competicion);
+                            } else if (competicion instanceof Supercopa && !((Supercopa)competicion).sigueVivo(clubSeguido)) {
+                                System.out.println("\n¡TU EQUIPO (" + clubSeguido.getNombre() + ") HA SIDO ELIMINADO!");
+                                System.out.println("Debes elegir un nuevo equipo para seguir.");
+                                clubSeguido = elegirClub(sc, clubes, competicion);
+                            }
+                        }
+                    }
+                    System.out.println("\n>>> SIMULACIÓN FINALIZADA <<<");
+                }
 
             } else if (opcion == 9) {
 
@@ -175,6 +220,14 @@ public class Menu {
 
                 System.out.println("Opcion incorrecta.");
             }
+
+            // Si la competición ha terminado, volvemos al menú principal
+            if (competicion != null && competicion.haTerminado()) {
+                System.out.println("\nPresiona ENTER para volver al menú de Ligas...");
+                sc.nextLine();
+                Main.main(null);
+                return; // Cerramos este menú para no acumular procesos
+            }
         }
     }
 
@@ -196,6 +249,15 @@ public class Menu {
 
         } else if (competicion instanceof Ligue1) {
             ((Ligue1) competicion).simularRonda(seguido, enDirecto);
+
+        } else if (competicion instanceof SegundaDivision) {
+            ((SegundaDivision) competicion).simularRonda(seguido, enDirecto);
+
+        } else if (competicion instanceof Supercopa) {
+            ((Supercopa) competicion).simularRonda(seguido, enDirecto);
+
+        } else if (competicion instanceof Copa) {
+            ((Copa) competicion).simularRonda(seguido, enDirecto);
 
         } else {
             System.out.println("Esta competicion no soporta modo carrera. Simulando normal...");
@@ -220,6 +282,17 @@ public class Menu {
         } else if (competicion instanceof Ligue1) {
             ((Ligue1) competicion).mostrarClasificacion();
 
+        } else if (competicion instanceof SegundaDivision) {
+            ((SegundaDivision) competicion).mostrarClasificacion();
+
+        } else if (competicion instanceof Supercopa) {
+            System.out.println("La Supercopa es eliminatoria (semifinales y final).");
+            competicion.mostrarUltimosResultados();
+
+        } else if (competicion instanceof Copa) {
+            System.out.println("La Copa es eliminatoria (desde Octavos hasta la Final).");
+            competicion.mostrarUltimosResultados();
+
         } else {
             System.out.println("Esta competicion no tiene clasificacion.");
         }
@@ -227,28 +300,52 @@ public class Menu {
 
     // --- Lo demás igual que lo tenías ---
 
-    private static Club elegirClub(Scanner sc, Club[] clubes) {
+    private static Club elegirClub(Scanner sc, Club[] clubes, Competicion competicion) {
         if (clubes == null || clubes.length == 0) {
             System.out.println("No hay clubes cargados.");
             return null;
         }
 
-        System.out.println("\nLISTA DE CLUBES:");
+        System.out.println("\nLISTA DE CLUBES DISPONIBLES:");
+        int mostrados = 0;
         for (int i = 0; i < clubes.length; i++) {
             if (clubes[i] != null) {
-                System.out.println((i + 1) + ". " + clubes[i].getNombre());
+                boolean vivo = true;
+                if (competicion instanceof Copa) vivo = ((Copa) competicion).sigueVivo(clubes[i]);
+                else if (competicion instanceof Supercopa) vivo = ((Supercopa) competicion).sigueVivo(clubes[i]);
+                
+                if (vivo) {
+                    System.out.println((i + 1) + ". " + clubes[i].getNombre());
+                    mostrados++;
+                }
             }
+        }
+
+        if (mostrados == 0) {
+            System.out.println("No quedan equipos vivos en esta competición.");
+            return null;
         }
 
         System.out.print("Numero de club: ");
         int n = leerEntero(sc);
 
-        if (n < 1 || n > clubes.length) {
+        if (n < 1 || n > clubes.length || clubes[n-1] == null) {
             System.out.println("Numero invalido.");
             return null;
         }
+        
+        // Validación extra de supervivencia
+        Club elegido = clubes[n-1];
+        if (competicion instanceof Copa && !((Copa) competicion).sigueVivo(elegido)) {
+            System.out.println("Ese equipo ya ha sido eliminado.");
+            return null;
+        }
+        if (competicion instanceof Supercopa && !((Supercopa) competicion).sigueVivo(elegido)) {
+            System.out.println("Ese equipo ya ha sido eliminado.");
+            return null;
+        }
 
-        return clubes[n - 1];
+        return elegido;
     }
 
     private static int leerEntero(Scanner sc) {
