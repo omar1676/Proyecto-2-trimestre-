@@ -1,318 +1,709 @@
 package main;
 
 import clubes.Club;
-import competicion.*;
-import jugadores.Jugador;
+import competicion.ChampionsLeague;
+import competicion.Liga;
+import datos.CargadorDatos;
+import extra.Utilidades;
 
 import java.util.Scanner;
 
 public class Menu {
 
-    public static void mostrar(Club[] clubes, Competicion competicion, EuropaLeague europa) {
-        Scanner sc = new Scanner(System.in);
+    private final Scanner sc;
 
-        Club clubActual = null;
-        if (clubes != null && clubes.length > 0) {
-            clubActual = clubes[0];
+    private int tipoCompeticion;
+
+    private Liga ligaActual;
+    private ChampionsLeague championsActual;
+
+    private Club[] clubesActuales;
+
+    private Club[] todosClubes;
+
+    private Club equipoEnDirecto;
+    private boolean verEnDirecto;
+
+    public Menu() {
+        this.sc = new Scanner(System.in);
+
+        this.tipoCompeticion = 0;
+
+        this.ligaActual = null;
+        this.championsActual = null;
+
+        this.clubesActuales = null;
+
+        this.todosClubes = CargadorDatos.crearTodosLosClubes();
+        CargadorDatos.cargarPlantillasAleatorias(this.todosClubes, 22, 6, "2024/25");
+
+        this.equipoEnDirecto = null;
+        this.verEnDirecto = false;
+    }
+
+    public void iniciar() {
+        boolean salir = false;
+
+        while (!salir) {
+            pintarMenuPrincipal();
+            int op = leerEntero("Selecciona opcion: ");
+
+            switch (op) {
+                case 1:
+                    elegirCompeticion();
+                    break;
+                case 2:
+                    elegirLigaOChampions();
+                    break;
+                case 3:
+                    generar();
+                    break;
+                case 4:
+                    verCalendarioOCuadro();
+                    break;
+                case 5:
+                    simularSiguiente();
+                    break;
+                case 6:
+                    verUltimosResultados();
+                    break;
+                case 7:
+                    verClasificacion();
+                    break;
+                case 8:
+                    saltarAJornada();
+                    break;
+                case 9:
+                    elegirEquipoEnDirecto();
+                    break;
+                case 10:
+                    toggleVerEnDirecto();
+                    break;
+                case 11:
+                    verPremios();
+                    break;
+                case 12:
+                    simularPartidoEnVivo();
+                    break;
+                case 0:
+                    salir = true;
+                    Utilidades.printlnColor(Utilidades.GRIS, "Saliendo...");
+                    break;
+                default:
+                    Utilidades.printlnColor(Utilidades.ROJO, "Opcion invalida.");
+            }
+        }
+    }
+
+    private void pintarMenuPrincipal() {
+        String comp = nombreCompeticion();
+        String sel = nombreSeleccionado();
+
+        String generado = estadoGenerado();
+        String terminado = estadoTerminado();
+
+        String directo;
+        if (verEnDirecto) {
+            directo = "ON";
+        } else {
+            directo = "OFF";
         }
 
-        Club clubSeguido = null;
-        int opcion = -1;
+        String equipo;
+        if (equipoEnDirecto == null) {
+            equipo = "Ninguno";
+        } else {
+            equipo = equipoEnDirecto.getNombre();
+        }
 
-        while (opcion != 0) {
+        String titulo = "SIMULADOR - MENU";
 
-            System.out.println("\n==============================");
+        String[] cabEstado = {"ESTADO", "VALOR"};
+        String[][] filasEstado = {
+                {"Competicion", comp},
+                {"Seleccion", sel},
+                {"Generada", generado},
+                {"Terminada", terminado},
+                {"En directo", directo},
+                {"Equipo", equipo}
+        };
 
-            if (clubActual == null) System.out.println("CLUB ACTUAL: -");
-            else System.out.println("CLUB ACTUAL: " + clubActual.getNombre());
+        String[] cabMenu = {"OP", "ACCION"};
+        String[][] filasMenu = {
+                {"1", "Elegir competicion"},
+                {"2", "Elegir liga / crear Champions (TOP16)"},
+                {"3", "Generar (calendario / cuadro)"},
+                {"4", "Ver calendario / cuadro"},
+                {"5", "Simular siguiente (jornada / ronda)"},
+                {"6", "Ver ultimos resultados"},
+                {"7", "Ver clasificacion (solo Liga)"},
+                {"8", "Saltar a jornada (solo Liga)"},
+                {"9", "Elegir equipo (solo Liga)"},
+                {"10", "Toggle ver en directo"},
+                {"11", "Premios (Pichichi, Asist., Zamora, Fair Play, MVP)"},
+                {"12", "Simular partido EN VIVO (elegir)"},
+                {"0", "Salir"}
+        };
 
-            if (competicion == null) System.out.println("COMPETICION: -");
-            else System.out.println("COMPETICION: " + competicion.getNombre());
+        ui.TablaConsola.imprimirTituloCentrado(titulo, 110);
+        ui.TablaConsola.imprimirTablaCentrada(null, cabEstado, filasEstado, 110);
+        ui.TablaConsola.imprimirTablaCentrada(null, cabMenu, filasMenu, 110);
+    }
 
-            if (clubSeguido == null) System.out.println("EQUIPO SEGUIDO: -");
-            else System.out.println("EQUIPO SEGUIDO: " + clubSeguido.getNombre());
+    private void elegirCompeticion() {
+        String[] cab = {"OP", "COMPETICION"};
+        String[][] filas = {
+                {"1", "Liga"},
+                {"2", "Champions League (TOP16 mix)"},
+                {"0", "Volver"}
+        };
 
-            if (europa == null) System.out.println("EUROPA LEAGUE (SIM): -");
-            else System.out.println("EUROPA LEAGUE (SIM): " + europa.getTotalEquipos() + " equipos");
+        ui.TablaConsola.imprimirTablaCentrada("ELEGIR COMPETICION", cab, filas, 110);
 
-            System.out.println("==============================");
-            System.out.println("1. Elegir club actual");
-            System.out.println("2. Ver plantilla (club actual)");
-            System.out.println("3. Buscar jugador por dorsal (club actual)");
-            System.out.println("4. Ver ficha del club (club actual)");
-            System.out.println("------------------------------");
-            System.out.println("5. Elegir equipo a seguir");
-            System.out.println("6. Simular 1 jornada (rapido)");
-            System.out.println("7. Simular 1 jornada (solo equipo seguido en directo)");
-            System.out.println("8. Ver ultima jornada");
-            System.out.println("9. Ver clasificacion");
-            System.out.println("------------------------------");
-            System.out.println("11. Ver equipos clasificados a Europa League (sim)");
-            System.out.println("12. Simular 1 jornada Europa League (sim)");
-            System.out.println("13. Ver ultima jornada Europa League (sim)");
-            System.out.println("14. Ver clasificacion Europa League (sim)");
-            System.out.println("------------------------------");
-            System.out.println("10. Elegir otras Ligas");
-            System.out.println("0. Salir");
-            System.out.print("Opcion: ");
+        int op = leerEntero("Opcion: ");
+        if (op == 0) {
+            return;
+        }
 
-            opcion = leerEntero(sc);
+        if (op != 1 && op != 2) {
+            Utilidades.printlnColor(Utilidades.ROJO, "Opcion invalida.");
+            return;
+        }
 
-            if (opcion == 1) {
+        tipoCompeticion = op;
 
-                clubActual = elegirClub(sc, clubes);
-                if (clubActual != null) clubActual.mostrarFichaClub();
+        ligaActual = null;
+        championsActual = null;
+        clubesActuales = null;
+        equipoEnDirecto = null;
 
-            } else if (opcion == 2) {
+        if (tipoCompeticion == 1) {
+            Utilidades.printlnColor(Utilidades.VERDE, "Has elegido Liga. Ahora elige cual (opcion 2).");
+        } else {
+            Utilidades.printlnColor(Utilidades.VERDE, "Has elegido Champions. Crea el TOP16 mix (opcion 2).");
+        }
+    }
 
-                if (clubActual == null) {
-                    System.out.println("No hay club seleccionado.");
-                } else {
-                    if (clubActual.getNumPrimerEquipo() == 0 && clubActual.getNumCantera() == 0) {
-                        System.out.println("Este club no tiene jugadores cargados.");
-                    } else {
-                        clubActual.mostrarPlantilla();
-                    }
-                }
+    private void elegirLigaOChampions() {
+        if (tipoCompeticion == 0) {
+            Utilidades.printlnColor(Utilidades.ROJO, "Primero elige una competicion (opcion 1).");
+            return;
+        }
 
-            } else if (opcion == 3) {
+        if (tipoCompeticion == 1) {
+            seleccionarLiga();
+            return;
+        }
 
-                if (clubActual == null) {
-                    System.out.println("No hay club seleccionado.");
-                } else {
-                    System.out.print("Dorsal: ");
-                    int dorsal = leerEntero(sc);
+        if (tipoCompeticion == 2) {
+            crearChampionsTop16Mix();
+            return;
+        }
 
-                    Jugador p = clubActual.buscarPrimerEquipo(dorsal);
-                    Jugador c = clubActual.buscarCantera(dorsal);
+        Utilidades.printlnColor(Utilidades.ROJO, "Competicion no valida.");
+    }
 
-                    if (p == null && c == null) {
-                        System.out.println("No existe jugador con dorsal " + dorsal + " en " + clubActual.getNombre());
-                    } else if (p != null && c == null) {
-                        mostrarEstadisticas(clubActual, p);
-                    } else if (p == null) {
-                        mostrarEstadisticas(clubActual, c);
-                    } else {
-                        System.out.println("Hay dos jugadores con el dorsal " + dorsal + ":");
-                        System.out.println("1) Primer equipo -> " + p.getNombre() + " (" + p.getPosicion() + ")");
-                        System.out.println("2) Cantera       -> " + c.getNombre() + " (" + c.getPosicion() + ")");
-                        System.out.print("Elige 1 o 2: ");
-                        int elegir = leerEntero(sc);
+    private void seleccionarLiga() {
+        String[] cab = {"OP", "LIGA"};
+        String[][] filas = {
+                {"1", "LaLiga (20)"},
+                {"2", "Premier League (20)"},
+                {"3", "Serie A (20)"},
+                {"4", "Bundesliga (18)"},
+                {"5", "Ligue 1 (18)"},
+                {"0", "Volver"}
+        };
 
-                        if (elegir == 1) mostrarEstadisticas(clubActual, p);
-                        else if (elegir == 2) mostrarEstadisticas(clubActual, c);
-                        else System.out.println("Opcion invalida.");
-                    }
-                }
+        ui.TablaConsola.imprimirTablaCentrada("ELEGIR LIGA (TOP 5)", cab, filas, 110);
 
-            } else if (opcion == 4) {
+        int op = leerEntero("Opcion: ");
+        if (op == 0) {
+            return;
+        }
 
-                if (clubActual == null) System.out.println("No hay club seleccionado.");
-                else clubActual.mostrarFichaClub();
+        Club[] clubes;
+        String nombreLiga;
+        int max;
 
-            } else if (opcion == 5) {
+        if (op == 1) {
+            nombreLiga = "LaLiga";
+            max = 20;
+        } else if (op == 2) {
+            nombreLiga = "Premier League";
+            max = 20;
+        } else if (op == 3) {
+            nombreLiga = "Serie A";
+            max = 20;
+        } else if (op == 4) {
+            nombreLiga = "Bundesliga";
+            max = 18;
+        } else if (op == 5) {
+            nombreLiga = "Ligue 1";
+            max = 18;
+        } else {
+            Utilidades.printlnColor(Utilidades.ROJO, "Opcion invalida.");
+            return;
+        }
 
-                clubSeguido = elegirClub(sc, clubes);
-                if (clubSeguido != null) {
-                    System.out.println("Equipo seguido: " + clubSeguido.getNombre());
-                }
+        clubes = CargadorDatos.clubesDeLiga(this.todosClubes, nombreLiga, max);
 
-            } else if (opcion == 6) {
+        ligaActual = new Liga(nombreLiga, clubes);
+        championsActual = null;
+        clubesActuales = clubes;
+        equipoEnDirecto = null;
 
-                if (competicion == null) {
-                    System.out.println("No hay competicion creada.");
-                } else {
-                    if (clubSeguido == null) {
-                        System.out.println("Elige primero el equipo que quieres seguir (opcion 5).");
-                        clubSeguido = elegirClub(sc, clubes);
-                    }
+        Utilidades.printlnColor(Utilidades.VERDE, "Liga seleccionada: " + ligaActual.getNombre());
+    }
 
-                    if (clubSeguido == null) {
-                        competicion.simularRonda(false);
-                    } else {
-                        simularConEquipoSeguido(competicion, clubSeguido, false);
-                    }
+    private void crearChampionsTop16Mix() {
+        Club[] top16 = CargadorDatos.top16(this.todosClubes);
+        championsActual = new ChampionsLeague("Champions League", top16);
 
-                    añadirGanadoresAEuropa(competicion, europa);
-                }
+        ligaActual = null;
+        clubesActuales = top16;
+        equipoEnDirecto = null;
 
-            } else if (opcion == 7) {
+        Utilidades.printlnColor(Utilidades.VERDE, "Champions creada: TOP16 mix.");
+    }
 
-                if (competicion == null) {
-                    System.out.println("No hay competicion creada.");
-                } else {
-                    if (clubSeguido == null) {
-                        System.out.println("Elige primero el equipo que quieres seguir (opcion 5).");
-                        clubSeguido = elegirClub(sc, clubes);
-                    }
-
-                    if (clubSeguido == null) {
-                        System.out.println("No se ha seleccionado equipo seguido.");
-                    } else {
-                        simularConEquipoSeguido(competicion, clubSeguido, true);
-
-                        añadirGanadoresAEuropa(competicion, europa);
-                    }
-                }
-
-            } else if (opcion == 8) {
-
-                if (competicion == null) System.out.println("No hay competicion creada.");
-                else competicion.mostrarUltimosResultados();
-
-            } else if (opcion == 9) {
-
-                if (competicion == null) {
-                    System.out.println("No hay competicion creada.");
-                } else {
-                    mostrarClasificacionSiExiste(competicion);
-                }
-
-            } else if (opcion == 11) {
-
-                if (europa == null) System.out.println("No hay Europa League (sim).");
-                else europa.mostrarEquipos();
-
-            } else if (opcion == 12) {
-
-                if (europa == null) {
-                    System.out.println("No hay Europa League (sim).");
-                } else {
-                    europa.simularRonda(false);
-                }
-
-            } else if (opcion == 13) {
-
-                if (europa == null) System.out.println("No hay Europa League (sim).");
-                else europa.mostrarUltimosResultados();
-
-            } else if (opcion == 14) {
-
-                if (europa == null) System.out.println("No hay Europa League (sim).");
-                else europa.mostrarClasificacion();
-
-            } else if (opcion == 10) {
-
+    private void generar() {
+        if (tipoCompeticion == 1) {
+            if (ligaActual == null) {
+                Utilidades.printlnColor(Utilidades.ROJO, "Primero elige una liga (opcion 2).");
                 return;
+            }
+            ligaActual.generar();
+            return;
+        }
 
-            } else if (opcion == 0) {
+        if (tipoCompeticion == 2) {
+            if (championsActual == null) {
+                Utilidades.printlnColor(Utilidades.ROJO, "Primero crea la Champions TOP16 mix (opcion 2).");
+                return;
+            }
+            championsActual.generar();
+            return;
+        }
 
-                System.out.println("Saliendo...");
+        Utilidades.printlnColor(Utilidades.ROJO, "Primero elige una competicion.");
+    }
 
+    private void verCalendarioOCuadro() {
+        if (tipoCompeticion == 1) {
+            if (ligaActual == null) {
+                Utilidades.printlnColor(Utilidades.ROJO, "Primero elige una liga (opcion 2).");
+                return;
+            }
+            ligaActual.mostrarCalendario();
+            return;
+        }
+
+        if (tipoCompeticion == 2) {
+            if (championsActual == null) {
+                Utilidades.printlnColor(Utilidades.ROJO, "Primero crea la Champions TOP16 mix (opcion 2).");
+                return;
+            }
+            championsActual.mostrarCuadro();
+            return;
+        }
+
+        Utilidades.printlnColor(Utilidades.ROJO, "No disponible.");
+    }
+
+    private void simularSiguiente() {
+        if (tipoCompeticion == 1) {
+            if (ligaActual == null) {
+                Utilidades.printlnColor(Utilidades.ROJO, "Primero elige una liga (opcion 2).");
+                return;
+            }
+            if (ligaActual.haTerminado()) {
+                Utilidades.printlnColor(Utilidades.AMAR, "La liga ya ha terminado.");
+                return;
+            }
+
+            boolean ok;
+            if (equipoEnDirecto != null) {
+                ok = ligaActual.simularRondaSoloEquipo(equipoEnDirecto, verEnDirecto);
             } else {
+                ok = ligaActual.simularRonda(verEnDirecto);
+            }
 
-                System.out.println("Opcion incorrecta.");
+            if (!ok) {
+                Utilidades.printlnColor(Utilidades.AMAR, "No se pudo simular la jornada.");
+            }
+            return;
+        }
+
+        if (tipoCompeticion == 2) {
+            if (championsActual == null) {
+                Utilidades.printlnColor(Utilidades.ROJO, "Primero crea la Champions TOP16 mix (opcion 2).");
+                return;
+            }
+            if (championsActual.haTerminado()) {
+                Utilidades.printlnColor(Utilidades.AMAR, "La Champions ya ha terminado.");
+                return;
+            }
+            championsActual.simularRonda(verEnDirecto);
+            return;
+        }
+
+        Utilidades.printlnColor(Utilidades.ROJO, "No hay competicion activa.");
+    }
+
+    private void verUltimosResultados() {
+        if (tipoCompeticion == 1) {
+            if (ligaActual == null) {
+                Utilidades.printlnColor(Utilidades.ROJO, "Primero elige una liga (opcion 2).");
+                return;
+            }
+            ligaActual.mostrarUltimosResultados();
+            return;
+        }
+
+        if (tipoCompeticion == 2) {
+            if (championsActual == null) {
+                Utilidades.printlnColor(Utilidades.ROJO, "Primero crea la Champions TOP16 mix (opcion 2).");
+                return;
+            }
+            championsActual.mostrarUltimosResultados();
+            return;
+        }
+
+        Utilidades.printlnColor(Utilidades.ROJO, "No disponible.");
+    }
+
+    private void verClasificacion() {
+        if (tipoCompeticion != 1) {
+            Utilidades.printlnColor(Utilidades.AMAR, "La clasificacion solo existe en Liga.");
+            return;
+        }
+
+        if (ligaActual == null) {
+            Utilidades.printlnColor(Utilidades.ROJO, "Primero elige una liga (opcion 2).");
+            return;
+        }
+
+        ligaActual.mostrarClasificacion();
+    }
+
+    private void saltarAJornada() {
+        if (tipoCompeticion != 1) {
+            Utilidades.printlnColor(Utilidades.AMAR, "Solo disponible para Liga.");
+            return;
+        }
+
+        if (ligaActual == null) {
+            Utilidades.printlnColor(Utilidades.ROJO, "Primero elige una liga (opcion 2).");
+            return;
+        }
+
+        int j = leerEntero("A que jornada quieres saltar?: ");
+        ligaActual.simularHastaJornada(j);
+        Utilidades.printlnColor(Utilidades.VERDE, "Salto completado.");
+    }
+
+    private void elegirEquipoEnDirecto() {
+        if (tipoCompeticion != 1) {
+            Utilidades.printlnColor(Utilidades.AMAR, "Solo disponible para Liga.");
+            return;
+        }
+
+        if (ligaActual == null || clubesActuales == null) {
+            Utilidades.printlnColor(Utilidades.ROJO, "Primero elige una liga (opcion 2).");
+            return;
+        }
+
+        int w = 74;
+        System.out.println("\n" + marco(w));
+        System.out.println("|" + center("ELEGIR EQUIPO (SOLO SU PARTIDO)", w) + "|");
+        System.out.println(marco(w));
+
+        int i = 0;
+        while (i < clubesActuales.length) {
+            Club c = clubesActuales[i];
+            if (c != null) {
+                String fila = String.format(" %3d) %-60s", c.getId(), c.getNombre());
+                System.out.println("|" + pad(fila, w) + "|");
+            }
+            i++;
+        }
+
+        System.out.println("|" + pad("   0) Quitar equipo en directo", w) + "|");
+        System.out.println(marco(w));
+
+        int id = leerEntero("ID: ");
+        if (id == 0) {
+            equipoEnDirecto = null;
+            Utilidades.printlnColor(Utilidades.GRIS, "Equipo en directo desactivado.");
+            return;
+        }
+
+        Club elegido = buscarClubPorId(clubesActuales, id);
+        if (elegido == null) {
+            Utilidades.printlnColor(Utilidades.ROJO, "No existe ese ID.");
+            return;
+        }
+
+        equipoEnDirecto = elegido;
+        Utilidades.printlnColor(Utilidades.VERDE, "Ahora veras SOLO el partido de: " + equipoEnDirecto.getNombre());
+    }
+
+    private void simularPartidoEnVivo() {
+        if (tipoCompeticion == 0) {
+            Utilidades.printlnColor(Utilidades.ROJO, "Primero elige competicion (opcion 1).");
+            return;
+        }
+
+        if (tipoCompeticion == 1) {
+            if (ligaActual == null) {
+                Utilidades.printlnColor(Utilidades.ROJO, "No hay liga seleccionada. Usa la opcion 2.");
+                return;
+            }
+
+            String[] disponibles = ligaActual.listarPartidosDisponibles();
+            if (disponibles == null || disponibles.length == 0) {
+                Utilidades.printlnColor(Utilidades.ROJO, "No hay partidos disponibles ahora mismo.");
+                return;
+            }
+
+            System.out.println();
+            System.out.println("PARTIDOS DISPONIBLES (JORNADA ACTUAL):");
+            for (int i = 0; i < disponibles.length; i++) {
+                System.out.println(" " + disponibles[i]);
+            }
+
+            int sel = leerEntero("Elige numero de partido para simular EN VIVO: ");
+            ligaActual.simularPartidoEnVivo(sel);
+            return;
+        }
+
+        if (tipoCompeticion == 2) {
+            if (championsActual == null) {
+                Utilidades.printlnColor(Utilidades.ROJO, "No hay Champions creada. Usa la opcion 2.");
+                return;
+            }
+
+            String[] disponibles = championsActual.listarPartidosDisponibles();
+            if (disponibles == null || disponibles.length == 0) {
+                Utilidades.printlnColor(Utilidades.ROJO, "No hay eliminatorias disponibles ahora mismo.");
+                return;
+            }
+
+            System.out.println();
+            System.out.println("ELIMINATORIAS DISPONIBLES (RONDA ACTUAL):");
+            for (int i = 0; i < disponibles.length; i++) {
+                System.out.println(" " + disponibles[i]);
+            }
+
+            int sel = leerEntero("Elige numero de eliminatoria para simular EN VIVO: ");
+            championsActual.simularPartidoEnVivo(sel);
+            return;
+        }
+
+        Utilidades.printlnColor(Utilidades.ROJO, "Modo no disponible para esta competicion.");
+    }
+
+    private void toggleVerEnDirecto() {
+        if (verEnDirecto) {
+            verEnDirecto = false;
+        } else {
+            verEnDirecto = true;
+        }
+
+        String estado;
+        if (verEnDirecto) {
+            estado = "ON";
+        } else {
+            estado = "OFF";
+        }
+
+        Utilidades.printlnColor(Utilidades.GRIS, "Ver en directo: " + estado);
+    }
+
+    private String nombreCompeticion() {
+        if (tipoCompeticion == 1) {
+            return "Liga";
+        }
+        if (tipoCompeticion == 2) {
+            return "Champions League";
+        }
+        return "Ninguna";
+    }
+
+    private String nombreSeleccionado() {
+        if (tipoCompeticion == 1) {
+            if (ligaActual == null) {
+                return "Ninguna";
+            }
+            return ligaActual.getNombre();
+        }
+
+        if (tipoCompeticion == 2) {
+            if (championsActual == null) {
+                return "Sin participantes";
+            }
+            return championsActual.getNombre();
+        }
+
+        return "-";
+    }
+
+    private String estadoGenerado() {
+        if (tipoCompeticion == 1) {
+            if (ligaActual == null) {
+                return "NO";
+            }
+            if (ligaActual.isGenerada()) {
+                return "SI";
+            }
+            return "NO";
+        }
+
+        if (tipoCompeticion == 2) {
+            if (championsActual == null) {
+                return "NO";
+            }
+            if (championsActual.isGenerada()) {
+                return "SI";
+            }
+            return "NO";
+        }
+
+        return "NO";
+    }
+
+    private String estadoTerminado() {
+        if (tipoCompeticion == 1) {
+            if (ligaActual == null) {
+                return "NO";
+            }
+            if (ligaActual.haTerminado()) {
+                return "SI";
+            }
+            return "NO";
+        }
+
+        if (tipoCompeticion == 2) {
+            if (championsActual == null) {
+                return "NO";
+            }
+            if (championsActual.haTerminado()) {
+                return "SI";
+            }
+            return "NO";
+        }
+
+        return "NO";
+    }
+
+    private void verPremios() {
+        if (clubesActuales == null || clubesActuales.length == 0) {
+            Utilidades.printlnColor(Utilidades.ROJO, "Primero elige una liga o crea la Champions (opcion 2).");
+            return;
+        }
+
+        premios.PremioJugador[] lista = premios.Premiador.calcularPremios(clubesActuales);
+        int w = 74;
+
+        System.out.println("\n" + marco(w));
+        System.out.println("|" + center("PREMIOS DE LA TEMPORADA", w) + "|");
+        System.out.println(marco(w));
+
+        for (int i = 0; i < lista.length; i++) {
+            premios.PremioJugador p = lista[i];
+            if (p == null) {
+                continue;
+            }
+
+            String tipo = p.getTipo().toString();
+
+            String jugador = "Jugador";
+            if (p.getJugador() != null && p.getJugador().getNombre() != null) {
+                jugador = p.getJugador().getNombre();
+            }
+
+            String club = "Club";
+            if (p.getClub() != null && p.getClub().getNombre() != null) {
+                club = p.getClub().getNombre();
+            }
+
+            String valorTxt;
+            if (p.getTipo() == premios.TipoPremio.FAIR_PLAY) {
+                valorTxt = "Tarjetas: " + p.getValor();
+            } else if (p.getTipo() == premios.TipoPremio.MVP) {
+                valorTxt = "Valoracion: " + p.getValor();
+            } else if (p.getTipo() == premios.TipoPremio.ZAMORA) {
+                valorTxt = "Porterias a 0: " + p.getValor();
+            } else if (p.getTipo() == premios.TipoPremio.ASISTENCIAS) {
+                valorTxt = "Asistencias: " + p.getValor();
+            } else {
+                valorTxt = "Goles: " + p.getValor();
+            }
+
+            String linea = " " + tipo + " | " + jugador + " - " + club + " | " + valorTxt;
+            System.out.println("|" + pad(linea, w) + "|");
+        }
+
+        System.out.println(marco(w));
+    }
+
+    private int leerEntero(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String s = sc.nextLine();
+            s = s.trim();
+
+            if (s.isEmpty()) {
+                Utilidades.printlnColor(Utilidades.ROJO, "Vacio. Intenta de nuevo.");
+                continue;
+            }
+
+            try {
+                return Integer.parseInt(s);
+            } catch (NumberFormatException e) {
+                Utilidades.printlnColor(Utilidades.ROJO, "No es un numero. Intenta de nuevo.");
             }
         }
     }
 
-    private static void añadirGanadoresAEuropa(Competicion competicion, EuropaLeague europa) {
-        if (competicion == null || europa == null) return;
-
-        Club[] ganadores = competicion.getGanadoresUltimaJornada();
-        int añadidos = 0;
-
-        for (int i = 0; i < ganadores.length; i++) {
-            if (europa.añadirEquipo(ganadores[i])) {
-                añadidos++;
-            }
-        }
-
-        if (añadidos > 0) {
-            System.out.println(">> Europa League (sim): se han añadido " + añadidos + " equipos.");
-        }
-    }
-
-    private static void simularConEquipoSeguido(Competicion competicion, Club seguido, boolean enDirecto) {
-
-        if (competicion instanceof Liga) {
-            ((Liga) competicion).simularRonda(seguido, enDirecto);
-
-        } else if (competicion instanceof PremierLeague) {
-            ((PremierLeague) competicion).simularRonda(seguido, enDirecto);
-
-        } else if (competicion instanceof Bundesliga) {
-            ((Bundesliga) competicion).simularRonda(seguido, enDirecto);
-
-        } else if (competicion instanceof SerieA) {
-            ((SerieA) competicion).simularRonda(seguido, enDirecto);
-
-        } else if (competicion instanceof Ligue1) {
-            ((Ligue1) competicion).simularRonda(seguido, enDirecto);
-
-        } else {
-            System.out.println("Esta competicion no soporta modo carrera. Simulando normal...");
-            competicion.simularRonda(enDirecto);
-        }
-    }
-
-    private static void mostrarClasificacionSiExiste(Competicion competicion) {
-
-        if (competicion instanceof Liga) {
-            ((Liga) competicion).mostrarClasificacion();
-
-        } else if (competicion instanceof PremierLeague) {
-            ((PremierLeague) competicion).mostrarClasificacion();
-
-        } else if (competicion instanceof Bundesliga) {
-            ((Bundesliga) competicion).mostrarClasificacion();
-
-        } else if (competicion instanceof SerieA) {
-            ((SerieA) competicion).mostrarClasificacion();
-
-        } else if (competicion instanceof Ligue1) {
-            ((Ligue1) competicion).mostrarClasificacion();
-
-        } else {
-            System.out.println("Esta competicion no tiene clasificacion.");
-        }
-    }
-
-    private static Club elegirClub(Scanner sc, Club[] clubes) {
-        if (clubes == null || clubes.length == 0) {
-            System.out.println("No hay clubes cargados.");
+    private Club buscarClubPorId(Club[] clubes, int id) {
+        if (clubes == null) {
             return null;
         }
-
-        System.out.println("\nLISTA DE CLUBES:");
-        for (int i = 0; i < clubes.length; i++) {
-            if (clubes[i] != null) {
-                System.out.println((i + 1) + ". " + clubes[i].getNombre());
+        int i = 0;
+        while (i < clubes.length) {
+            Club c = clubes[i];
+            if (c != null && c.getId() == id) {
+                return c;
             }
+            i++;
         }
-
-        System.out.print("Numero de club: ");
-        int n = leerEntero(sc);
-
-        if (n < 1 || n > clubes.length) {
-            System.out.println("Numero invalido.");
-            return null;
-        }
-
-        return clubes[n - 1];
+        return null;
     }
 
-    private static int leerEntero(Scanner sc) {
-        String texto = sc.nextLine();
-        try {
-            return Integer.parseInt(texto.trim());
-        } catch (Exception e) {
-            return -1;
-        }
+    private static String marco(int inner) {
+        return "+" + "-".repeat(inner) + "+";
     }
 
-    private static void mostrarEstadisticas(Club club, Jugador j) {
-        System.out.println("\n------------------------------");
-        System.out.println("CLUB: " + club.getNombre());
-        System.out.println("JUGADOR: " + j.getNombre() + " (#" + j.getDorsal() + " - " + j.getPosicion() + ")");
-        System.out.println("EDAD: " + j.getEdad() + " | VALOR: " + String.format("%.1f", j.getValorMercado()) + " | VAL: " + j.getValoracion());
-        System.out.println("TEMPORADA: " + j.getTemporada());
-        System.out.println("PARTIDOS: " + j.getPartidos() + " | MINUTOS: " + j.getMinutos());
-        System.out.println("GOLES: " + j.getGoles() + " | ASISTENCIAS: " + j.getAsistencias());
-        System.out.println("AMARILLAS: " + j.getAmarillas() + " | ROJAS: " + j.getRojas());
-        if ("POR".equalsIgnoreCase(j.getPosicion())) {
-            System.out.println("PORTERIAS A CERO: " + j.getPorteriasCero());
+    private static String pad(String s, int len) {
+        if (s == null) {
+            s = "";
         }
-        System.out.println("------------------------------\n");
+        if (s.length() > len) {
+            s = s.substring(0, len);
+        }
+        return String.format("%-" + len + "s", s);
+    }
+
+    private static String center(String s, int len) {
+        if (s == null) {
+            s = "";
+        }
+        if (s.length() > len) {
+            s = s.substring(0, len);
+        }
+        int left = (len - s.length()) / 2;
+        int right = len - s.length() - left;
+        return " ".repeat(left) + s + " ".repeat(right);
     }
 }

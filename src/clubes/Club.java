@@ -6,21 +6,13 @@ public class Club {
 
     private int id;
     private String nombre;
-    private int fundacion;
+    private int anioFundacion;
     private String presidente;
 
-    private int titulosLiga;
-    private int titulosCopaRey;
-    private int titulosChampions;
-    private int titulosSupercopa;
-    private int titulosMundialito;
+    private int presupuesto;
+    private int nivel;
 
-    // ✅ NUEVO: Nombres de trofeos (por defecto estilo España)
-    private String nombreTrofeoLiga = "LIGA";
-    private String nombreTrofeoCopa = "COPA DEL REY";
-    private String nombreTrofeoUcl = "CHAMPIONS";
-    private String nombreTrofeoSupercopa = "SUPERCOPA";
-    private String nombreTrofeoMundial = "MUNDIALITO";
+    private String liga;
 
     private Jugador[] primerEquipo;
     private int numPrimerEquipo;
@@ -28,210 +20,328 @@ public class Club {
     private Jugador[] cantera;
     private int numCantera;
 
-    public Club(int id, String nombre, int fundacion, String presidente,
-                int maxPrimerEquipo, int maxCantera) {
+    private int titulosLiga;
+    private int titulosCopa;
+    private int titulosChampions;
+    private int titulosEuropaLeague;
+    private int titulosSupercopa;
 
-        this.id = id;
-        this.nombre = nombre;
-        this.fundacion = fundacion;
-        this.presidente = presidente;
+    public Club(int id, String nombre, int anioFundacion, String presidente, int presupuesto, int nivel) {
 
-        this.primerEquipo = new Jugador[maxPrimerEquipo];
-        this.cantera = new Jugador[maxCantera];
-
+        this.primerEquipo = new Jugador[25];
         this.numPrimerEquipo = 0;
+
+        this.cantera = new Jugador[10];
         this.numCantera = 0;
 
+        if (id > 0) this.id = id;
+        else this.id = 1;
+
+        if (nombre != null && nombre.trim().length() >= 2) this.nombre = nombre.trim();
+        else this.nombre = "Sin nombre";
+
+        if (anioFundacion >= 1850 && anioFundacion <= 2100) this.anioFundacion = anioFundacion;
+        else this.anioFundacion = 1900;
+
+        if (presidente != null && presidente.trim().length() >= 2) this.presidente = presidente.trim();
+        else this.presidente = "Sin presidente";
+
+        if (presupuesto >= 0) this.presupuesto = presupuesto;
+        else this.presupuesto = 0;
+
+        if (nivel >= 1 && nivel <= 100) this.nivel = nivel;
+        else this.nivel = 50;
+
+        this.liga = "Sin liga";
+
         this.titulosLiga = 0;
-        this.titulosCopaRey = 0;
+        this.titulosCopa = 0;
         this.titulosChampions = 0;
+        this.titulosEuropaLeague = 0;
         this.titulosSupercopa = 0;
-        this.titulosMundialito = 0;
     }
 
-    public void setPalmares(int liga, int copaRey, int champions, int supercopa, int mundialito) {
-        this.titulosLiga = liga;
-        this.titulosCopaRey = copaRey;
-        this.titulosChampions = champions;
-        this.titulosSupercopa = supercopa;
-        this.titulosMundialito = mundialito;
+    public Club() {
+        this(1, "Club Genérico", 1900, "Presidente", 10, 50);
     }
 
-    public void setNombresTrofeos(String liga, String copa, String ucl, String supercopa, String mundial) {
-        if (liga != null && !liga.trim().isEmpty()) this.nombreTrofeoLiga = liga.trim();
-        if (copa != null && !copa.trim().isEmpty()) this.nombreTrofeoCopa = copa.trim();
-        if (ucl != null && !ucl.trim().isEmpty()) this.nombreTrofeoUcl = ucl.trim();
-        if (supercopa != null && !supercopa.trim().isEmpty()) this.nombreTrofeoSupercopa = supercopa.trim();
-        if (mundial != null && !mundial.trim().isEmpty()) this.nombreTrofeoMundial = mundial.trim();
+    public static boolean validarNombre(String n) {
+        if (n == null) return false;
+        n = n.trim();
+        return n.length() >= 2;
     }
 
-    public String resumenPalmares() {
-        return nombreTrofeoLiga + ":" + titulosLiga +
-                " | " + nombreTrofeoCopa + ":" + titulosCopaRey +
-                " | " + nombreTrofeoUcl + ":" + titulosChampions +
-                " | " + nombreTrofeoSupercopa + ":" + titulosSupercopa +
-                " | " + nombreTrofeoMundial + ":" + titulosMundialito;
+    private static boolean validarId(int id) {
+        return id > 0;
     }
 
-    public boolean añadirPrimerEquipo(Jugador jugador) {
-        if (jugador == null) return false;
+    private static boolean validarAnio(int anio) {
+        return anio >= 1850 && anio <= 2100;
+    }
+
+    private static boolean validarPresupuesto(int p) {
+        return p >= 0;
+    }
+
+    private static boolean validarNivel(int n) {
+        return n >= 1 && n <= 100;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        // Setter SIN validación (la validación se hace con cambiarId / constructor)
+        this.id = id;
+    }
+
+    /**
+     * Método de acción recomendado: valida y aplica el cambio.
+     */
+    public boolean cambiarId(int id) {
+        if (!validarId(id)) return false;
+        this.id = id;
+        return true;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        // Setter SIN validación
+        this.nombre = nombre;
+    }
+
+    public boolean cambiarNombre(String nombre) {
+        if (!validarNombre(nombre)) return false;
+        this.nombre = nombre.trim();
+        return true;
+    }
+
+    public int getAnioFundacion() {
+        return anioFundacion;
+    }
+
+    public void setAnioFundacion(int anioFundacion) {
+        // Setter SIN validación
+        this.anioFundacion = anioFundacion;
+    }
+
+    public boolean cambiarAnioFundacion(int anioFundacion) {
+        if (!validarAnio(anioFundacion)) return false;
+        this.anioFundacion = anioFundacion;
+        return true;
+    }
+
+    public String getPresidente() {
+        return presidente;
+    }
+
+    public void setPresidente(String presidente) {
+        // Setter SIN validación
+        this.presidente = presidente;
+    }
+
+    public boolean cambiarPresidente(String presidente) {
+        if (presidente == null) return false;
+        String p = presidente.trim();
+        if (p.length() < 2) return false;
+        this.presidente = p;
+        return true;
+    }
+
+    public int getPresupuesto() {
+        return presupuesto;
+    }
+
+    public void setPresupuesto(int presupuesto) {
+        // Setter SIN validación
+        this.presupuesto = presupuesto;
+    }
+
+    public boolean cambiarPresupuesto(int presupuesto) {
+        if (!validarPresupuesto(presupuesto)) return false;
+        this.presupuesto = presupuesto;
+        return true;
+    }
+
+    public int getNivel() {
+        return nivel;
+    }
+
+    public void setNivel(int nivel) {
+        // Setter SIN validación
+        this.nivel = nivel;
+    }
+
+    public boolean cambiarNivel(int nivel) {
+        if (!validarNivel(nivel)) return false;
+        this.nivel = nivel;
+        return true;
+    }
+
+    public int getNumPrimerEquipo() {
+        return numPrimerEquipo;
+    }
+
+    public Jugador getJugadorPrimerEquipo(int pos) {
+        if (pos < 0 || pos >= numPrimerEquipo) return null;
+        return primerEquipo[pos];
+    }
+
+    public int getNumCantera() {
+        return numCantera;
+    }
+
+    public Jugador getJugadorCantera(int pos) {
+        if (pos < 0 || pos >= numCantera) return null;
+        return cantera[pos];
+    }
+
+    public boolean anadirPrimerEquipo(Jugador j) {
+        if (j == null) return false;
         if (numPrimerEquipo >= primerEquipo.length) return false;
 
-        primerEquipo[numPrimerEquipo] = jugador;
+        for (int i = 0; i < numPrimerEquipo; i++) {
+            if (primerEquipo[i] != null && primerEquipo[i].equals(j)) return false;
+        }
+
+        primerEquipo[numPrimerEquipo] = j;
         numPrimerEquipo++;
         return true;
     }
 
-    public boolean añadirCantera(Jugador jugador) {
-        if (jugador == null) return false;
+    public boolean anadirCantera(Jugador j) {
+        if (j == null) return false;
         if (numCantera >= cantera.length) return false;
 
-        cantera[numCantera] = jugador;
+        for (int i = 0; i < numCantera; i++) {
+            if (cantera[i] != null && cantera[i].equals(j)) return false;
+        }
+
+        cantera[numCantera] = j;
         numCantera++;
         return true;
     }
 
-    public void mostrarPlantilla() {
-        final int INNER = 63;
-        final String TOP = "┌" + "─".repeat(INNER) + "┐";
-        final String MID = "├" + "─".repeat(INNER) + "┤";
-        final String BOT = "└" + "─".repeat(INNER) + "┘";
+    public boolean ficharJugador(Jugador j) {
+        if (j == null) return false;
 
-        System.out.println(TOP);
-        System.out.println("│" + center("PLANTILLA", INNER) + "│");
-        System.out.println("│" + center(nombre + "  |  Fundado: " + fundacion + "  |  Presidente: " + presidente, INNER) + "│");
-        System.out.println(BOT);
+        if (anadirPrimerEquipo(j)) return true;
 
-        System.out.println();
-
-        imprimirSeccion("PRIMER EQUIPO (" + numPrimerEquipo + ")", primerEquipo, numPrimerEquipo, INNER);
-
-        System.out.println();
-
-        imprimirSeccion("CANTERA (" + numCantera + ")", cantera, numCantera, INNER);
+        return anadirCantera(j);
     }
 
-    private void imprimirSeccion(String titulo, Jugador[] lista, int num, int INNER) {
-        final String TOP = "┌" + "─".repeat(INNER) + "┐";
-        final String MID = "├" + "─".repeat(INNER) + "┤";
-        final String BOT = "└" + "─".repeat(INNER) + "┘";
-
-        System.out.println(TOP);
-        System.out.println("│" + center(titulo, INNER) + "│");
-        System.out.println(MID);
-
-        String header = " DOR  " + col("NOMBRE", 26) + "  " + col("POS", 3) + "  " + col("ED", 2) + "  " + colR("€M", 6) + "  " + colR("VAL", 3);
-        System.out.println("│" + col(header, INNER) + "│");
-        System.out.println(MID);
-
-        if (num == 0) {
-            System.out.println("│" + center("(sin jugadores)", INNER) + "│");
-            System.out.println(BOT);
-            return;
-        }
-
-        for (int i = 0; i < num; i++) {
-            Jugador j = lista[i];
-
-            String fila =
-                    " " + colR(String.valueOf(j.getDorsal()), 3) + "  " +
-                            col(j.getNombre(), 26) + "  " +
-                            col(j.getPosicion(), 3) + "  " +
-                            colR(String.valueOf(j.getEdad()), 2) + "  " +
-                            colR(String.format("%.1f", j.getValorMercado()), 6) + "  " +
-                            colR(String.valueOf(j.getValoracion()), 3);
-
-            System.out.println("│" + col(fila, INNER) + "│");
-        }
-
-        System.out.println(BOT);
+    public void vaciarPlantilla() {
+        for (int i = 0; i < primerEquipo.length; i++) primerEquipo[i] = null;
+        for (int i = 0; i < cantera.length; i++) cantera[i] = null;
+        numPrimerEquipo = 0;
+        numCantera = 0;
     }
 
-    public void mostrarFichaClub() {
-        final int INNER = 63;
-        final String TOP = "┌" + "─".repeat(INNER) + "┐";
-        final String MID = "├" + "─".repeat(INNER) + "┤";
-        final String BOT = "└" + "─".repeat(INNER) + "┘";
+    public void setPalmares(int ligas, int copas, int champions, int europaLeague, int supercopas) {
 
-        System.out.println(TOP);
-        System.out.println("│" + center("FICHA DEL CLUB", INNER) + "│");
-        System.out.println("│" + center(nombre + "  |  Fundado: " + fundacion + "  |  Presidente: " + presidente, INNER) + "│");
-        System.out.println(BOT);
+        if (ligas < 0) ligas = 0;
+        if (copas < 0) copas = 0;
+        if (champions < 0) champions = 0;
+        if (europaLeague < 0) europaLeague = 0;
+        if (supercopas < 0) supercopas = 0;
 
-        System.out.println();
-
-        System.out.println(TOP);
-        System.out.println("│" + center("PALMARÉS", INNER) + "│");
-        System.out.println(MID);
-
-        String header = " " + col("TÍTULO", 40) + "  " + colR("TOTAL", 6);
-        System.out.println("│" + col(header, INNER) + "│");
-        System.out.println(MID);
-
-        // ✅ EDITADO: ahora imprime los nombres configurables
-        imprimirTitulo(nombreTrofeoLiga, titulosLiga, INNER);
-        imprimirTitulo(nombreTrofeoCopa, titulosCopaRey, INNER);
-        imprimirTitulo(nombreTrofeoUcl, titulosChampions, INNER);
-        imprimirTitulo(nombreTrofeoSupercopa, titulosSupercopa, INNER);
-        imprimirTitulo(nombreTrofeoMundial, titulosMundialito, INNER);
-
-        System.out.println(BOT);
-        System.out.println();
+        this.titulosLiga = ligas;
+        this.titulosCopa = copas;
+        this.titulosChampions = champions;
+        this.titulosEuropaLeague = europaLeague;
+        this.titulosSupercopa = supercopas;
     }
 
-    private void imprimirTitulo(String nombreTitulo, int total, int INNER) {
-        String fila = " " + col(nombreTitulo, 40) + "  " + colR(String.valueOf(total), 6);
-        System.out.println("│" + col(fila, INNER) + "│");
+    public void ganarLiga() {
+        titulosLiga++;
     }
 
-    public Jugador buscarPrimerEquipo(int dorsal) {
-        for (int i = 0; i < numPrimerEquipo; i++) {
-            if (primerEquipo[i] != null && primerEquipo[i].getDorsal() == dorsal) {
-                return primerEquipo[i];
-            }
-        }
-        return null;
+    public void ganarCopa() {
+        titulosCopa++;
     }
 
-    public Jugador buscarCantera(int dorsal) {
-        for (int i = 0; i < numCantera; i++) {
-            if (cantera[i] != null && cantera[i].getDorsal() == dorsal) {
-                return cantera[i];
-            }
-        }
-        return null;
+    public void ganarChampions() {
+        titulosChampions++;
     }
 
-    private static String col(String s, int len) {
-        return String.format("%-" + len + "." + len + "s", s == null ? "" : s);
+    public void ganarEuropaLeague() {
+        titulosEuropaLeague++;
     }
 
-    private static String colR(String s, int len) {
-        return String.format("%" + len + "." + len + "s", s == null ? "" : s);
+    public void ganarSupercopa() {
+        titulosSupercopa++;
     }
 
-    private static String center(String s, int len) {
-        s = (s == null) ? "" : s;
-        if (s.length() > len) s = s.substring(0, len);
-        int left = (len - s.length()) / 2;
-        int right = len - s.length() - left;
-        return " ".repeat(left) + s + " ".repeat(right);
+    public int getTitulosLiga() {
+        return titulosLiga;
     }
 
-    public int getId() { return id; }
-    public String getNombre() { return nombre; }
-    public int getFundacion() { return fundacion; }
-    public String getPresidente() { return presidente; }
-    public int getNumPrimerEquipo() { return numPrimerEquipo; }
-    public int getNumCantera() { return numCantera; }
-    public int getLiga() { return titulosLiga; }
-    public int getCopa() { return titulosCopaRey; }
-    public int getUcl() { return titulosChampions; }
-    public int getSupercopa() { return titulosSupercopa; }
-    public int getMundial() { return titulosMundialito; }
+    public int getTitulosCopa() {
+        return titulosCopa;
+    }
+
+    public int getTitulosChampions() {
+        return titulosChampions;
+    }
+
+    public int getTitulosEuropaLeague() {
+        return titulosEuropaLeague;
+    }
+
+    public int getTitulosSupercopa() {
+        return titulosSupercopa;
+    }
+
+    public String getPalmares() {
+        return "Liga: " + titulosLiga +
+                " | Copa: " + titulosCopa +
+                " | Champions: " + titulosChampions +
+                " | Europa League: " + titulosEuropaLeague +
+                " | Supercopa: " + titulosSupercopa;
+    }
 
     @Override
     public String toString() {
-        return nombre + " (Fundado en " + fundacion + ")";
+        return "Club{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", anioFundacion=" + anioFundacion +
+                ", presidente='" + presidente + '\'' +
+                ", presupuesto=" + presupuesto +
+                ", nivel=" + nivel +
+                ", primerEquipo=" + numPrimerEquipo + "/25" +
+                ", cantera=" + numCantera + "/10" +
+                ", palmares=[" + getPalmares() + "]" +
+                '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (o.getClass() != Club.class) return false;
+        Club otro = (Club) o;
+        return this.id == otro.id;
+    }
+
+    public String getLiga() {
+        return liga;
+    }
+
+    public void setLiga(String liga) {
+        if (liga == null) {
+            this.liga = "Sin liga";
+            return;
+        }
+        String t = liga.trim();
+        if (t.isEmpty()) {
+            this.liga = "Sin liga";
+            return;
+        }
+        this.liga = t;
+    }
+
 }

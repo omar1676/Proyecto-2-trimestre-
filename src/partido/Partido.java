@@ -1,6 +1,10 @@
 package partido;
 
 import clubes.Club;
+import extra.Utilidades;
+import jugadores.Jugador;
+import jugadores.Posicion;
+
 import java.util.Random;
 
 public class Partido {
@@ -11,146 +15,213 @@ public class Partido {
     private int golesDelLocal;
     private int golesDelVisitante;
 
-    private boolean yaJugado;
+    private boolean jugado;
 
-    private String[] listaEventos;
-    private int totalEventos;
-
-    private Random rnd;
+    private Random aleatorio;
 
     public Partido(Club local, Club visitante) {
-        this.rnd = new Random();
-
-        if (!validarClubs(local, visitante)) {
-            throw new IllegalArgumentException("Partido invalido: local/visitante null o iguales.");
-        }
-
+        this.aleatorio = new Random();
         this.equipoLocal = local;
         this.equipoVisitante = visitante;
-
         this.golesDelLocal = 0;
         this.golesDelVisitante = 0;
-        this.yaJugado = false;
+        this.jugado = false;
+    }
 
-        this.listaEventos = new String[25];
-        this.totalEventos = 0;
+    public Club getEquipoLocal() { return equipoLocal; }
+    public Club getEquipoVisitante() { return equipoVisitante; }
+
+    public int getGolesDelLocal() { return golesDelLocal; }
+    public int getGolesDelVisitante() { return golesDelVisitante; }
+
+    public boolean isJugado() {
+        return jugado;
+    }
+
+    public boolean participa(Club c) {
+        if (c == null) return false;
+        return c == equipoLocal || c == equipoVisitante;
     }
 
     public void simular(boolean verEnDirecto) {
-        if (yaJugado) return;
+        if (jugado) return;
 
-        golesDelLocal = 0;
-        golesDelVisitante = 0;
-        totalEventos = 0;
+        golesDelLocal = golesRealistas(aleatorio, true);
+        golesDelVisitante = golesRealistas(aleatorio, false);
 
         if (verEnDirecto) {
-            System.out.println("\n==========================================");
-            System.out.println(equipoLocal.getNombre() + " vs " + equipoVisitante.getNombre());
-            System.out.println("==========================================");
+            Utilidades.printlnColor(Utilidades.CIAN, "\n" + equipoLocal.getNombre() + " vs " + equipoVisitante.getNombre());
+            Utilidades.escribirLento("Comienza el partido", 10);
         }
 
-        for (int minuto = 1; minuto <= 90; minuto++) {
+        for (int i = 0; i < golesDelLocal; i++) {
+            int minuto = minutoGol();
+            Jugador goleador = elegirGoleador(equipoLocal);
+            Jugador asistente = elegirAsistente(equipoLocal, goleador);
 
-            int tirada = rnd.nextInt(100);
+            if (goleador != null) goleador.setGoles(goleador.getGoles() + 1);
+            if (asistente != null) asistente.setAsistencias(asistente.getAsistencias() + 1);
 
-            if (tirada < 6) {
-                boolean marcaLocal = rnd.nextBoolean();
-
-                if (marcaLocal) {
-                    golesDelLocal++;
-                    guardarEvento("GOL " + equipoLocal.getNombre() + " (" + minuto + "') -> " + toString());
-                    if (verEnDirecto) System.out.println(minuto + "'  GOL " + equipoLocal.getNombre() + " -> " + golesDelLocal + "-" + golesDelVisitante);
-                } else {
-                    golesDelVisitante++;
-                    guardarEvento("GOL " + equipoVisitante.getNombre() + " (" + minuto + "') -> " + toString());
-                    if (verEnDirecto) System.out.println(minuto + "'  GOL " + equipoVisitante.getNombre() + " -> " + golesDelLocal + "-" + golesDelVisitante);
+            if (verEnDirecto) {
+                String msg = "[" + minuto + "'] GOL " + equipoLocal.getNombre() + " - " + nombreJugador(goleador);
+                Utilidades.printlnColor(Utilidades.VERDE, msg);
+                if (asistente != null) {
+                    Utilidades.printlnColor(Utilidades.GRIS, "   Asistencia: " + asistente.getNombre());
                 }
+                Utilidades.dormir(150);
+            }
+        }
 
-            } else if (tirada < 8) {
-                boolean esParaLocal = rnd.nextBoolean();
-                String equipo = esParaLocal ? equipoLocal.getNombre() : equipoVisitante.getNombre();
+        for (int i = 0; i < golesDelVisitante; i++) {
+            int minuto = minutoGol();
+            Jugador goleador = elegirGoleador(equipoVisitante);
+            Jugador asistente = elegirAsistente(equipoVisitante, goleador);
 
-                guardarEvento("Penalti para " + equipo + " (" + minuto + "')");
-                if (verEnDirecto) System.out.println(minuto + "'  Penalti para " + equipo);
+            if (goleador != null) goleador.setGoles(goleador.getGoles() + 1);
+            if (asistente != null) asistente.setAsistencias(asistente.getAsistencias() + 1);
 
-                boolean marca = rnd.nextInt(100) < 75;
-                if (marca) {
-                    if (esParaLocal) golesDelLocal++;
-                    else golesDelVisitante++;
-
-                    guardarEvento("Penalti GOL " + equipo + " (" + minuto + "') -> " + toString());
-                    if (verEnDirecto) System.out.println(minuto + "'  Penalti GOL -> " + golesDelLocal + "-" + golesDelVisitante);
-                } else {
-                    guardarEvento("Penalti fallado por " + equipo + " (" + minuto + "')");
-                    if (verEnDirecto) System.out.println(minuto + "'  Penalti fallado");
+            if (verEnDirecto) {
+                String msg = "[" + minuto + "'] GOL " + equipoVisitante.getNombre() + " - " + nombreJugador(goleador);
+                Utilidades.printlnColor(Utilidades.VERDE, msg);
+                if (asistente != null) {
+                    Utilidades.printlnColor(Utilidades.GRIS, "   Asistencia: " + asistente.getNombre());
                 }
+                Utilidades.dormir(150);
+            }
+        }
 
-            } else if (tirada < 12) {
-                boolean aLocal = rnd.nextBoolean();
-                String equipo = aLocal ? equipoLocal.getNombre() : equipoVisitante.getNombre();
+        aplicarTarjetas(equipoLocal, verEnDirecto);
+        aplicarTarjetas(equipoVisitante, verEnDirecto);
 
-                boolean esRoja = rnd.nextInt(100) < 10;
-                if (esRoja) {
-                    guardarEvento("Roja para " + equipo + " (" + minuto + "')");
-                    if (verEnDirecto) System.out.println(minuto + "'  Roja para " + equipo);
-                } else {
-                    guardarEvento("Amarilla para " + equipo + " (" + minuto + "')");
-                    if (verEnDirecto) System.out.println(minuto + "'  Amarilla para " + equipo);
+        aplicarPorteriaCero(equipoLocal, golesDelVisitante);
+        aplicarPorteriaCero(equipoVisitante, golesDelLocal);
+
+        if (verEnDirecto) {
+            Utilidades.escribirLento("Final del partido...", 10);
+            imprimirMarcadorColor();
+        }
+
+        jugado = true;
+    }
+
+    private void imprimirMarcadorColor() {
+        String marcador = equipoLocal.getNombre() + " " + golesDelLocal + " - " + golesDelVisitante + " " + equipoVisitante.getNombre();
+
+        if (golesDelLocal > golesDelVisitante) Utilidades.printlnColor(Utilidades.VERDE, marcador);
+        else if (golesDelLocal < golesDelVisitante) Utilidades.printlnColor(Utilidades.ROJO, marcador);
+        else Utilidades.printlnColor(Utilidades.AMAR, marcador);
+    }
+
+    private int golesRealistas(Random r, boolean esLocal) {
+        int x = r.nextInt(100);
+
+        int g;
+        if (x < 28) g = 0;
+        else if (x < 62) g = 1;
+        else if (x < 82) g = 2;
+        else if (x < 92) g = 3;
+        else if (x < 97) g = 4;
+        else if (x < 99) g = 5;
+        else g = 6;
+
+        if (esLocal && r.nextInt(100) < 10 && g < 6) g++;
+
+        return g;
+    }
+
+    private int minutoGol() {
+        int m = 1 + aleatorio.nextInt(90);
+        if (aleatorio.nextInt(100) < 8) m = 90 + aleatorio.nextInt(6);
+        return m;
+    }
+
+    private void aplicarTarjetas(Club equipo, boolean verEnDirecto) {
+        int amarillas = aleatorio.nextInt(3);
+        int rojas;
+        if (aleatorio.nextInt(100) < 7) rojas = 1;
+        else rojas = 0;
+
+        for (int i = 0; i < amarillas; i++) {
+            Jugador j = elegirJugadorDeCampo(equipo);
+            if (j != null) {
+                j.setAmarillas(j.getAmarillas() + 1);
+                if (verEnDirecto && aleatorio.nextInt(100) < 40) {
+                    Utilidades.printlnColor(Utilidades.AMAR, "Tarjeta amarilla para " + equipo.getNombre() + " - " + j.getNombre());
                 }
             }
         }
 
-        yaJugado = true;
-
-        if (verEnDirecto) {
-            System.out.println("\nFINAL");
-            System.out.println(toString());
-            System.out.println("==========================================\n");
+        for (int i = 0; i < rojas; i++) {
+            Jugador j = elegirJugadorDeCampo(equipo);
+            if (j != null) {
+                j.setRojas(j.getRojas() + 1);
+                if (verEnDirecto) {
+                    Utilidades.printlnColor(Utilidades.ROJO, "Tarjeta roja para " + equipo.getNombre() + " - " + j.getNombre());
+                }
+            }
         }
     }
 
-    private void guardarEvento(String texto) {
-        if (texto == null) return;
-        if (totalEventos >= listaEventos.length) return;
-
-        listaEventos[totalEventos] = texto;
-        totalEventos++;
+    private void aplicarPorteriaCero(Club equipo, int golesRecibidos) {
+        if (golesRecibidos != 0) return;
+        Jugador por = elegirPortero(equipo);
+        if (por != null) por.setPorteriasCero(por.getPorteriasCero() + 1);
     }
 
-    public static boolean validarClubs(Club local, Club visitante) {
-        return local != null && visitante != null && local != visitante;
+    private Jugador elegirPortero(Club club) {
+        if (club == null) return null;
+        for (int i = 0; i < club.getNumPrimerEquipo(); i++) {
+            Jugador j = club.getJugadorPrimerEquipo(i);
+            if (j != null && j.getPosicion() == Posicion.POR) return j;
+        }
+        return null;
     }
 
-    public Club getEquipoLocal() {
-        return equipoLocal;
+    private Jugador elegirGoleador(Club club) {
+        Jugador j = elegirPorPosiciones(club, new Posicion[]{Posicion.DC, Posicion.EI, Posicion.ED, Posicion.MCO, Posicion.MC});
+        if (j != null) return j;
+        return elegirJugadorDeCampo(club);
     }
 
-    public Club getEquipoVisitante() {
-        return equipoVisitante;
+    private Jugador elegirAsistente(Club club, Jugador goleador) {
+        Jugador j = elegirPorPosiciones(club, new Posicion[]{Posicion.MCO, Posicion.MC, Posicion.EI, Posicion.ED, Posicion.LD, Posicion.LI});
+        if (j != null && j != goleador) return j;
+        return null;
     }
 
-    public int getGolesDelLocal() {
-        return golesDelLocal;
+    private Jugador elegirJugadorDeCampo(Club club) {
+        if (club == null) return null;
+
+        int intentos = 15;
+        while (intentos > 0) {
+            int i = aleatorio.nextInt(Math.max(1, club.getNumPrimerEquipo()));
+            Jugador j = club.getJugadorPrimerEquipo(i);
+            if (j != null && j.getPosicion() != Posicion.POR) return j;
+            intentos--;
+        }
+        return null;
     }
 
-    public int getGolesDelVisitante() {
-        return golesDelVisitante;
+    private Jugador elegirPorPosiciones(Club club, Posicion[] posiciones) {
+        if (club == null || posiciones == null || posiciones.length == 0) return null;
+
+        int intentos = 20;
+        while (intentos > 0) {
+            int i = aleatorio.nextInt(Math.max(1, club.getNumPrimerEquipo()));
+            Jugador j = club.getJugadorPrimerEquipo(i);
+            if (j != null) {
+                for (int k = 0; k < posiciones.length; k++) {
+                    if (j.getPosicion() == posiciones[k]) return j;
+                }
+            }
+            intentos--;
+        }
+        return null;
     }
 
-    public boolean isYaJugado() {
-        return yaJugado;
-    }
-
-    public boolean participa(Club club) {
-        if (club == null) return false;
-
-        if (equipoLocal == club || equipoVisitante == club) return true;
-
-        String nombre = club.getNombre();
-        if (nombre == null) return false;
-
-        return (equipoLocal != null && nombre.equalsIgnoreCase(equipoLocal.getNombre()))
-                || (equipoVisitante != null && nombre.equalsIgnoreCase(equipoVisitante.getNombre()));
+    private String nombreJugador(Jugador j) {
+        if (j == null) return "Jugador";
+        return j.getNombre();
     }
 
     @Override
