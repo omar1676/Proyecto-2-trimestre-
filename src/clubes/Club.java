@@ -32,41 +32,23 @@ public class Club {
         this.cantera = new Jugador[10];
         this.numCantera = 0;
 
-        if (id > 0) {
-            this.id = id;
-        } else {
-            this.id = 1;
-        }
+        if (validarId(id)) this.id = id;
+        else this.id = 1;
 
-        if (nombre != null && nombre.trim().length() >= 2) {
-            this.nombre = nombre.trim();
-        } else {
-            this.nombre = "Sin nombre";
-        }
+        if (validarNombre(nombre)) this.nombre = nombre.trim();
+        else this.nombre = "Sin nombre";
 
-        if (anioFundacion >= 1850 && anioFundacion <= 2100) {
-            this.anioFundacion = anioFundacion;
-        } else {
-            this.anioFundacion = 1900;
-        }
+        if (validarAnio(anioFundacion)) this.anioFundacion = anioFundacion;
+        else this.anioFundacion = 1900;
 
-        if (presidente != null && presidente.trim().length() >= 2) {
-            this.presidente = presidente.trim();
-        } else {
-            this.presidente = "Sin presidente";
-        }
+        if (validarPresidente(presidente)) this.presidente = presidente.trim();
+        else this.presidente = "Sin presidente";
 
-        if (presupuesto >= 0) {
-            this.presupuesto = presupuesto;
-        } else {
-            this.presupuesto = 0;
-        }
+        if (validarPresupuesto(presupuesto)) this.presupuesto = presupuesto;
+        else this.presupuesto = 0;
 
-        if (nivel >= 1 && nivel <= 100) {
-            this.nivel = nivel;
-        } else {
-            this.nivel = 50;
-        }
+        if (validarNivel(nivel)) this.nivel = nivel;
+        else this.nivel = 50;
 
         this.titulosLiga = 0;
         this.titulosCopa = 0;
@@ -80,11 +62,9 @@ public class Club {
     }
 
     public static boolean validarNombre(String nom) {
-        if (nom == null) {
-            return false;
-        }
-        nom = nom.trim();
-        return nom.length() >= 2;
+        if (nom == null) return false;
+        String n = nom.trim();
+        return n.length() >= 2;
     }
 
     private static boolean validarId(int id) {
@@ -95,12 +75,22 @@ public class Club {
         return anio >= 1850 && anio <= 2100;
     }
 
+    private static boolean validarPresidente(String pres) {
+        if (pres == null) return false;
+        String p = pres.trim();
+        return p.length() >= 2;
+    }
+
     private static boolean validarPresupuesto(int p) {
         return p >= 0;
     }
 
     private static boolean validarNivel(int n) {
         return n >= 1 && n <= 100;
+    }
+
+    private static boolean validarTitulos(int ligas, int copas, int champions, int europaLeague, int supercopas) {
+        return ligas >= 0 && copas >= 0 && champions >= 0 && europaLeague >= 0 && supercopas >= 0;
     }
 
     public int getId() {
@@ -112,9 +102,7 @@ public class Club {
     }
 
     public boolean cambiarId(int id) {
-        if (!validarId(id)) {
-            return false;
-        }
+        if (!validarId(id)) return false;
         this.id = id;
         return true;
     }
@@ -128,9 +116,7 @@ public class Club {
     }
 
     public boolean cambiarNombre(String nombre) {
-        if (!validarNombre(nombre)) {
-            return false;
-        }
+        if (!validarNombre(nombre)) return false;
         this.nombre = nombre.trim();
         return true;
     }
@@ -144,9 +130,7 @@ public class Club {
     }
 
     public boolean cambiarAnioFundacion(int anioFundacion) {
-        if (!validarAnio(anioFundacion)) {
-            return false;
-        }
+        if (!validarAnio(anioFundacion)) return false;
         this.anioFundacion = anioFundacion;
         return true;
     }
@@ -160,14 +144,8 @@ public class Club {
     }
 
     public boolean cambiarPresidente(String presidente) {
-        if (presidente == null) {
-            return false;
-        }
-        String p = presidente.trim();
-        if (p.length() < 2) {
-            return false;
-        }
-        this.presidente = p;
+        if (!validarPresidente(presidente)) return false;
+        this.presidente = presidente.trim();
         return true;
     }
 
@@ -180,9 +158,7 @@ public class Club {
     }
 
     public boolean cambiarPresupuesto(int presupuesto) {
-        if (!validarPresupuesto(presupuesto)) {
-            return false;
-        }
+        if (!validarPresupuesto(presupuesto)) return false;
         this.presupuesto = presupuesto;
         return true;
     }
@@ -196,9 +172,7 @@ public class Club {
     }
 
     public boolean cambiarNivel(int nivel) {
-        if (!validarNivel(nivel)) {
-            return false;
-        }
+        if (!validarNivel(nivel)) return false;
         this.nivel = nivel;
         return true;
     }
@@ -208,9 +182,7 @@ public class Club {
     }
 
     public Jugador getJugadorPrimerEquipo(int pos) {
-        if (pos < 0 || pos >= numPrimerEquipo) {
-            return null;
-        }
+        if (pos < 0 || pos >= numPrimerEquipo) return null;
         return primerEquipo[pos];
     }
 
@@ -219,24 +191,16 @@ public class Club {
     }
 
     public Jugador getJugadorCantera(int pos) {
-        if (pos < 0 || pos >= numCantera) {
-            return null;
-        }
+        if (pos < 0 || pos >= numCantera) return null;
         return cantera[pos];
     }
 
     public boolean anadirPrimerEquipo(Jugador j) {
-        if (j == null) {
-            return false;
-        }
-        if (numPrimerEquipo >= primerEquipo.length) {
-            return false;
-        }
+        if (j == null) return false;
+        if (numPrimerEquipo >= primerEquipo.length) return false;
 
         for (int i = 0; i < numPrimerEquipo; i++) {
-            if (primerEquipo[i] != null && primerEquipo[i].equals(j)) {
-                return false;
-            }
+            if (primerEquipo[i] != null && primerEquipo[i].equals(j)) return false;
         }
 
         primerEquipo[numPrimerEquipo] = j;
@@ -245,17 +209,11 @@ public class Club {
     }
 
     public boolean anadirCantera(Jugador j) {
-        if (j == null) {
-            return false;
-        }
-        if (numCantera >= cantera.length) {
-            return false;
-        }
+        if (j == null) return false;
+        if (numCantera >= cantera.length) return false;
 
         for (int i = 0; i < numCantera; i++) {
-            if (cantera[i] != null && cantera[i].equals(j)) {
-                return false;
-            }
+            if (cantera[i] != null && cantera[i].equals(j)) return false;
         }
 
         cantera[numCantera] = j;
@@ -264,14 +222,8 @@ public class Club {
     }
 
     public boolean ficharJugador(Jugador j) {
-        if (j == null) {
-            return false;
-        }
-
-        if (anadirPrimerEquipo(j)) {
-            return true;
-        }
-
+        if (j == null) return false;
+        if (anadirPrimerEquipo(j)) return true;
         return anadirCantera(j);
     }
 
@@ -287,28 +239,17 @@ public class Club {
     }
 
     public void setPalmares(int ligas, int copas, int champions, int europaLeague, int supercopas) {
-
-        if (ligas < 0) {
-            ligas = 0;
-        }
-        if (copas < 0) {
-            copas = 0;
-        }
-        if (champions < 0) {
-            champions = 0;
-        }
-        if (europaLeague < 0) {
-            europaLeague = 0;
-        }
-        if (supercopas < 0) {
-            supercopas = 0;
-        }
-
         this.titulosLiga = ligas;
         this.titulosCopa = copas;
         this.titulosChampions = champions;
         this.titulosEuropaLeague = europaLeague;
         this.titulosSupercopa = supercopas;
+    }
+
+    public boolean cambiarPalmares(int ligas, int copas, int champions, int europaLeague, int supercopas) {
+        if (!validarTitulos(ligas, copas, champions, europaLeague, supercopas)) return false;
+        setPalmares(ligas, copas, champions, europaLeague, supercopas);
+        return true;
     }
 
     public void ganarLiga() {
@@ -376,12 +317,8 @@ public class Club {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-        if (o.getClass() != Club.class) {
-            return false;
-        }
+        if (o == null) return false;
+        if (o.getClass() != Club.class) return false;
         Club otro = (Club) o;
         return this.id == otro.id;
     }
