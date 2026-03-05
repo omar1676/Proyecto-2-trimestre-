@@ -2,47 +2,52 @@ package datos;
 
 import clubes.Club;
 import jugadores.Jugador;
+import jugadores.Posicion;
 
-public class CargadorDatos {
+import java.util.Random;
 
-    public static Club[] crearClubesConPlantillas() {
-        Club[] lista = crearClubes();
-        cargarAlaves(buscarPorId(lista, 1));
-        cargarRealMadrid(buscarPorId(lista, 15));
-        return lista;
+public final class CargadorDatos {
+
+    private CargadorDatos() {
     }
 
-    private static Club buscarPorId(Club[] lista, int id) {
-        if (lista == null) return null;
-
-        for (int i = 0; i < lista.length; i++) {
-            Club c = lista[i];
-            if (c != null && c.getId() == id) return c;
+    public static void cargarPlantillasAleatorias(Club[] clubes, int numPrimerEquipo, int numCantera, String temporada) {
+        if (clubes == null) {
+            return;
         }
-        return null;
+
+        for (int i = 0; i < clubes.length; i++) {
+            Club c = clubes[i];
+            if (c == null) {
+                continue;
+            }
+            if (c.getNumPrimerEquipo() <= 0) {
+                generarPlantillaAleatoria(c, numPrimerEquipo, numCantera, temporada);
+            }
+        }
     }
 
-    private static Club[] crearClubes() {
-        Club alaves = new Club(1, "Deportivo Alaves", 1921, "Presidente", 30, 50);
-        Club athletic = new Club(2, "Athletic Club", 1898, "Presidente", 30, 50);
-        Club atletico = new Club(3, "Atletico de Madrid", 1903, "Presidente", 30, 50);
-        Club barcelona = new Club(4, "FC Barcelona", 1899, "Presidente", 30, 50);
-        Club celta = new Club(5, "Celta de Vigo", 1923, "Presidente", 30, 50);
-        Club elche = new Club(6, "Elche", 1923, "Presidente", 30, 50);
-        Club espanyol = new Club(7, "Espanyol", 1900, "Presidente", 30, 50);
-        Club getafe = new Club(8, "Getafe", 1983, "Presidente", 30, 50);
-        Club girona = new Club(9, "Girona", 1930, "Presidente", 30, 50);
-        Club levante = new Club(10, "Levante", 1909, "Presidente", 30, 50);
-        Club mallorca = new Club(11, "Real Mallorca", 1916, "Presidente", 30, 50);
-        Club osasuna = new Club(12, "Osasuna", 1920, "Presidente", 30, 50);
-        Club rayo = new Club(13, "Rayo Vallecano", 1924, "Presidente", 30, 50);
-        Club betis = new Club(14, "Real Betis", 1907, "Presidente", 30, 50);
-        Club madrid = new Club(15, "Real Madrid", 1902, "Presidente", 30, 50);
-        Club oviedo = new Club(16, "Real Oviedo", 1926, "Presidente", 30, 50);
-        Club sociedad = new Club(17, "Real Sociedad", 1909, "Presidente", 30, 50);
-        Club sevilla = new Club(18, "Sevilla", 1890, "Presidente", 30, 50);
-        Club valencia = new Club(19, "Valencia", 1919, "Presidente", 30, 50);
-        Club villarreal = new Club(20, "Villarreal", 1923, "Presidente", 30, 50);
+    public static Club[] crearClubesLaLiga() {
+        Club alaves = new Club(1, "Deportivo Alaves", 1921, "Presidente", 40, 68);
+        Club athletic = new Club(2, "Athletic Club", 1898, "Presidente", 95, 83);
+        Club atletico = new Club(3, "Atletico de Madrid", 1903, "Presidente", 180, 88);
+        Club barcelona = new Club(4, "FC Barcelona", 1899, "Presidente", 240, 92);
+        Club celta = new Club(5, "Celta de Vigo", 1923, "Presidente", 60, 74);
+        Club elche = new Club(6, "Elche", 1923, "Presidente", 28, 64);
+        Club espanyol = new Club(7, "Espanyol", 1900, "Presidente", 45, 69);
+        Club getafe = new Club(8, "Getafe", 1983, "Presidente", 55, 73);
+        Club girona = new Club(9, "Girona", 1930, "Presidente", 55, 75);
+        Club levante = new Club(10, "Levante", 1909, "Presidente", 25, 63);
+        Club mallorca = new Club(11, "Real Mallorca", 1916, "Presidente", 45, 70);
+        Club osasuna = new Club(12, "Osasuna", 1920, "Presidente", 50, 71);
+        Club rayo = new Club(13, "Rayo Vallecano", 1924, "Presidente", 45, 70);
+        Club betis = new Club(14, "Real Betis", 1907, "Presidente", 90, 81);
+        Club madrid = new Club(15, "Real Madrid", 1902, "Presidente", 280, 95);
+        Club oviedo = new Club(16, "Real Oviedo", 1926, "Presidente", 22, 62);
+        Club sociedad = new Club(17, "Real Sociedad", 1909, "Presidente", 85, 82);
+        Club sevilla = new Club(18, "Sevilla", 1890, "Presidente", 75, 78);
+        Club valencia = new Club(19, "Valencia", 1919, "Presidente", 75, 77);
+        Club villarreal = new Club(20, "Villarreal", 1923, "Presidente", 85, 80);
 
         alaves.setPalmares(0, 0, 0, 0, 0);
         athletic.setPalmares(8, 24, 0, 3, 0);
@@ -73,405 +78,583 @@ public class CargadorDatos {
         };
     }
 
+    public static Club[] crearClubesHypermotion() {
+        Club[] clubes = new Club[22];
+
+        clubes[0] = new Club(901, "Real Zaragoza", 1932, "Presidente", 28, 64);
+        clubes[1] = new Club(902, "Sporting de Gijon", 1905, "Presidente", 26, 63);
+        clubes[2] = new Club(903, "Racing de Santander", 1913, "Presidente", 24, 62);
+        clubes[3] = new Club(904, "Real Valladolid", 1928, "Presidente", 32, 66);
+        clubes[4] = new Club(905, "Eibar", 1940, "Presidente", 24, 62);
+        clubes[5] = new Club(906, "Albacete", 1940, "Presidente", 20, 60);
+        clubes[6] = new Club(907, "Tenerife", 1922, "Presidente", 20, 60);
+        clubes[7] = new Club(908, "Levante", 1909, "Presidente", 28, 64);
+        clubes[8] = new Club(909, "Granada", 1931, "Presidente", 30, 65);
+        clubes[9] = new Club(910, "Cadiz", 1910, "Presidente", 28, 64);
+        clubes[10] = new Club(911, "Elche", 1923, "Presidente", 26, 63);
+        clubes[11] = new Club(912, "Leganes", 1928, "Presidente", 26, 63);
+        clubes[12] = new Club(913, "Burgos", 1936, "Presidente", 18, 59);
+        clubes[13] = new Club(914, "Mirandes", 1927, "Presidente", 16, 58);
+        clubes[14] = new Club(915, "Huesca", 1960, "Presidente", 16, 58);
+        clubes[15] = new Club(916, "Almeria", 1989, "Presidente", 30, 65);
+        clubes[16] = new Club(917, "Cordoba", 1954, "Presidente", 15, 57);
+        clubes[17] = new Club(918, "Malaga", 1904, "Presidente", 18, 59);
+        clubes[18] = new Club(919, "Cartagena", 1995, "Presidente", 16, 58);
+        clubes[19] = new Club(920, "Racing Ferrol", 1919, "Presidente", 14, 56);
+        clubes[20] = new Club(921, "Oviedo", 1926, "Presidente", 22, 61);
+        clubes[21] = new Club(922, "Las Palmas", 1949, "Presidente", 26, 63);
+
+        return clubes;
+    }
+
+    public static Club[] crearClubesEuropaLeague() {
+
+        Club[] laliga = crearClubesLaLiga();
+        Club[] premier = crearClubesPremierLeague();
+        Club[] serieA = crearClubesSerieA();
+        Club[] bundes = crearClubesBundesliga();
+        Club[] ligue1 = crearClubesLigue1();
+
+        ordenarPorNivelDesc(laliga);
+        ordenarPorNivelDesc(premier);
+        ordenarPorNivelDesc(serieA);
+        ordenarPorNivelDesc(bundes);
+        ordenarPorNivelDesc(ligue1);
+
+        Club[] bolsa = new Club[0];
+        bolsa = unir5(
+                recortarDesde(laliga, 3),
+                recortarDesde(premier, 3),
+                recortarDesde(serieA, 3),
+                recortarDesde(bundes, 3),
+                recortarDesde(ligue1, 3)
+        );
+
+        ordenarPorNivelDesc(bolsa);
+
+        Club[] res = new Club[16];
+        int pos = 0;
+        int i = 0;
+        while (pos < res.length && i < bolsa.length) {
+            if (bolsa[i] != null && !estaEn(res, pos, bolsa[i])) {
+                res[pos] = bolsa[i];
+                pos++;
+            }
+            i++;
+        }
+
+        cargarPlantillasAleatorias(res, 22, 6, "2024/25");
+        return res;
+    }
+
+    private static Club[] recortarDesde(Club[] clubes, int desde) {
+        if (clubes == null) {
+            return null;
+        }
+        if (desde < 0) {
+            desde = 0;
+        }
+        if (desde >= clubes.length) {
+            return new Club[0];
+        }
+
+        Club[] res = new Club[clubes.length - desde];
+        int pos = 0;
+
+        for (int i = desde; i < clubes.length; i++) {
+            res[pos] = clubes[i];
+            pos++;
+        }
+
+        return res;
+    }
 
     public static Club[] crearClubesPremierLeague() {
-
-        Club arsenal = new Club(101, "Arsenal", 1886, "Presidente", 30, 50);
-        Club astonVilla = new Club(102, "Aston Villa", 1874, "Presidente", 30, 50);
-        Club bournemouth = new Club(103, "AFC Bournemouth", 1899, "Presidente", 30, 50);
-        Club brentford = new Club(104, "Brentford", 1889, "Presidente", 30, 50);
-        Club brighton = new Club(105, "Brighton & Hove Albion", 1901, "Presidente", 30, 50);
-        Club chelsea = new Club(106, "Chelsea", 1905, "Presidente", 30, 50);
-        Club crystalPalace = new Club(107, "Crystal Palace", 1905, "Presidente", 30, 50);
-        Club everton = new Club(108, "Everton", 1878, "Presidente", 30, 50);
-        Club fulham = new Club(109, "Fulham", 1879, "Presidente", 30, 50);
-        Club ipswich = new Club(110, "Ipswich Town", 1878, "Presidente", 30, 50);
-        Club leicester = new Club(111, "Leicester City", 1884, "Presidente", 30, 50);
-        Club liverpool = new Club(112, "Liverpool", 1892, "Presidente", 30, 50);
-        Club manCity = new Club(113, "Manchester City", 1880, "Presidente", 30, 50);
-        Club manUnited = new Club(114, "Manchester United", 1878, "Presidente", 30, 50);
-        Club newcastle = new Club(115, "Newcastle United", 1892, "Presidente", 30, 50);
-        Club nottinghamForest = new Club(116, "Nottingham Forest", 1865, "Presidente", 30, 50);
-        Club southampton = new Club(117, "Southampton", 1885, "Presidente", 30, 50);
-        Club tottenham = new Club(118, "Tottenham Hotspur", 1882, "Presidente", 30, 50);
-        Club westHam = new Club(119, "West Ham United", 1895, "Presidente", 30, 50);
-        Club wolves = new Club(120, "Wolverhampton Wanderers", 1877, "Presidente", 30, 50);
-
-        arsenal.setPalmares(13, 14, 0, 17, 0);
-        astonVilla.setPalmares(7, 7, 1, 1, 0);
-        bournemouth.setPalmares(0, 0, 0, 0, 0);
-        brentford.setPalmares(0, 0, 0, 0, 0);
-        brighton.setPalmares(0, 0, 0, 1, 0);
-        chelsea.setPalmares(6, 8, 2, 4, 2);
-        crystalPalace.setPalmares(0, 1, 0, 1, 0);
-        everton.setPalmares(9, 5, 0, 9, 0);
-        fulham.setPalmares(0, 0, 0, 0, 0);
-        ipswich.setPalmares(1, 1, 0, 0, 0);
-        leicester.setPalmares(1, 1, 0, 2, 0);
-        liverpool.setPalmares(20, 8, 6, 16, 1);
-        manCity.setPalmares(10, 7, 1, 7, 1);
-        manUnited.setPalmares(20, 13, 3, 21, 1);
-        newcastle.setPalmares(4, 6, 0, 1, 0);
-        nottinghamForest.setPalmares(1, 2, 2, 1, 0);
-        southampton.setPalmares(0, 1, 0, 0, 0);
-        tottenham.setPalmares(2, 8, 0, 7, 0);
-        westHam.setPalmares(0, 3, 0, 1, 0);
-        wolves.setPalmares(3, 4, 0, 4, 0);
-
-        Club[] premier = new Club[] {
-                arsenal, astonVilla, bournemouth, brentford, brighton, chelsea, crystalPalace, everton, fulham, ipswich, leicester, liverpool, manCity, manUnited, newcastle, nottinghamForest, southampton, tottenham, westHam, wolves
-        };
-
-        for (int i = 0; i < premier.length; i++) {
-            if (premier[i] != null) {
-                premier[i].setNombresTrofeos(
-                        "LIGA INGLESA",
-                        "FA CUP",
-                        "CHAMPIONS LEAGUE",
-                        "COMMUNITY SHIELD",
-                        "MUNDIAL DE CLUBES"
-                );
-            }
-        }
+        Club arsenal = new Club(101, "Arsenal", 1886, "Presidente", 210, 88);
+        Club astonVilla = new Club(102, "Aston Villa", 1874, "Presidente", 140, 80);
+        Club bournemouth = new Club(103, "AFC Bournemouth", 1899, "Presidente", 70, 72);
+        Club brentford = new Club(104, "Brentford", 1889, "Presidente", 70, 72);
+        Club brighton = new Club(105, "Brighton & Hove Albion", 1901, "Presidente", 95, 76);
+        Club chelsea = new Club(106, "Chelsea", 1905, "Presidente", 200, 85);
+        Club crystalPalace = new Club(107, "Crystal Palace", 1905, "Presidente", 85, 74);
+        Club everton = new Club(108, "Everton", 1878, "Presidente", 95, 75);
+        Club fulham = new Club(109, "Fulham", 1879, "Presidente", 80, 73);
+        Club ipswich = new Club(110, "Ipswich Town", 1878, "Presidente", 55, 68);
+        Club leicester = new Club(111, "Leicester City", 1884, "Presidente", 80, 73);
+        Club liverpool = new Club(112, "Liverpool", 1892, "Presidente", 230, 90);
+        Club manCity = new Club(113, "Manchester City", 1880, "Presidente", 260, 93);
+        Club manUnited = new Club(114, "Manchester United", 1878, "Presidente", 220, 86);
+        Club newcastle = new Club(115, "Newcastle United", 1892, "Presidente", 150, 81);
+        Club nottinghamForest = new Club(116, "Nottingham Forest", 1865, "Presidente", 75, 72);
+        Club southampton = new Club(117, "Southampton", 1885, "Presidente", 60, 69);
+        Club tottenham = new Club(118, "Tottenham Hotspur", 1882, "Presidente", 190, 84);
+        Club westHam = new Club(119, "West Ham United", 1895, "Presidente", 120, 78);
+        Club wolves = new Club(120, "Wolverhampton Wanderers", 1877, "Presidente", 95, 75);
 
         return new Club[]{
-                arsenal, astonVilla, bournemouth, brentford, brighton, chelsea,
-                crystalPalace, everton, fulham, ipswich, leicester, liverpool,
-                manCity, manUnited, newcastle, nottinghamForest, southampton,
-                tottenham, westHam, wolves
+                arsenal, astonVilla, bournemouth, brentford, brighton,
+                chelsea, crystalPalace, everton, fulham, ipswich,
+                leicester, liverpool, manCity, manUnited, newcastle,
+                nottinghamForest, southampton, tottenham, westHam, wolves
         };
-
     }
 
-    // ===============================
-//   SERIE A (Italia)
-// ===============================
     public static Club[] crearClubesSerieA() {
+        Club[] clubes = new Club[20];
 
-        Club inter = new Club(201, "Inter", 1908, "Presidente", 30, 50);
-        Club milan = new Club(202, "AC Milan", 1899, "Presidente", 30, 50);
-        Club juventus = new Club(203, "Juventus", 1897, "Presidente", 30, 50);
-        Club napoli = new Club(204, "Napoli", 1926, "Presidente", 30, 50);
-        Club roma = new Club(205, "Roma", 1927, "Presidente", 30, 50);
-        Club lazio = new Club(206, "Lazio", 1900, "Presidente", 30, 50);
-        Club atalanta = new Club(207, "Atalanta", 1907, "Presidente", 30, 50);
-        Club fiorentina = new Club(208, "Fiorentina", 1926, "Presidente", 30, 50);
-        Club bologna = new Club(209, "Bologna", 1909, "Presidente", 30, 50);
-        Club torino = new Club(210, "Torino", 1906, "Presidente", 30, 50);
-        Club genoa = new Club(211, "Genoa", 1893, "Presidente", 30, 50);
-        Club udinese = new Club(212, "Udinese", 1896, "Presidente", 30, 50);
-        Club empoli = new Club(213, "Empoli", 1920, "Presidente", 30, 50);
-        Club verona = new Club(214, "Hellas Verona", 1903, "Presidente", 30, 50);
-        Club cagliari = new Club(215, "Cagliari", 1920, "Presidente", 30, 50);
-        Club lecce = new Club(216, "Lecce", 1908, "Presidente", 30, 50);
-        Club monza = new Club(217, "Monza", 1912, "Presidente", 30, 50);
-        Club parma = new Club(218, "Parma", 1913, "Presidente", 30, 50);
-        Club como = new Club(219, "Como", 1907, "Presidente", 30, 50);
-        Club venezia = new Club(220, "Venezia", 1907, "Presidente", 30, 50);
-
-        // Liga / Copa / UCL / Supercopa / Mundial
-        inter.setPalmares(20, 9, 3, 8, 1);
-        milan.setPalmares(19, 5, 7, 8, 1);
-        juventus.setPalmares(36, 15, 2, 9, 0);
-        napoli.setPalmares(4, 6, 0, 3, 0);
-        roma.setPalmares(3, 9, 0, 2, 0);
-        lazio.setPalmares(2, 7, 0, 5, 0);
-        atalanta.setPalmares(0, 1, 0, 0, 0);
-        fiorentina.setPalmares(2, 6, 0, 1, 0);
-        bologna.setPalmares(7, 3, 0, 0, 0);
-        torino.setPalmares(7, 5, 0, 0, 0);
-        genoa.setPalmares(9, 1, 0, 0, 0);
-        udinese.setPalmares(0, 0, 0, 0, 0);
-        empoli.setPalmares(0, 0, 0, 0, 0);
-        verona.setPalmares(1, 0, 0, 0, 0);
-        cagliari.setPalmares(1, 0, 0, 0, 0);
-        lecce.setPalmares(0, 0, 0, 0, 0);
-        monza.setPalmares(0, 0, 0, 0, 0);
-        parma.setPalmares(0, 3, 0, 1, 0);
-        como.setPalmares(0, 0, 0, 0, 0);
-        venezia.setPalmares(0, 1, 0, 0, 0);
-
-        Club[] clubes = new Club[]{
-                inter, milan, juventus, napoli, roma,
-                lazio, atalanta, fiorentina, bologna, torino,
-                genoa, udinese, empoli, verona, cagliari,
-                lecce, monza, parma, como, venezia
-        };
-
-        // Nombres de trofeos
-        for (Club c : clubes) {
-            if (c != null) c.setNombresTrofeos(
-                    "Serie A",
-                    "Coppa Italia",
-                    "Champions League",
-                    "Supercoppa Italiana",
-                    "Mundial de Clubes"
-            );
-        }
+        clubes[0] = new Club(201, "Atalanta", 1907, "Presidente", 95, 79);
+        clubes[1] = new Club(202, "Bologna", 1909, "Presidente", 65, 72);
+        clubes[2] = new Club(203, "Cagliari", 1920, "Presidente", 45, 67);
+        clubes[3] = new Club(204, "Empoli", 1920, "Presidente", 45, 66);
+        clubes[4] = new Club(205, "Fiorentina", 1926, "Presidente", 90, 76);
+        clubes[5] = new Club(206, "Genoa", 1893, "Presidente", 55, 69);
+        clubes[6] = new Club(207, "Inter", 1908, "Presidente", 180, 86);
+        clubes[7] = new Club(208, "Juventus", 1897, "Presidente", 170, 85);
+        clubes[8] = new Club(209, "Lazio", 1900, "Presidente", 110, 78);
+        clubes[9] = new Club(210, "Lecce", 1908, "Presidente", 40, 65);
+        clubes[10] = new Club(211, "Milan", 1899, "Presidente", 165, 84);
+        clubes[11] = new Club(212, "Monza", 1912, "Presidente", 50, 68);
+        clubes[12] = new Club(213, "Napoli", 1926, "Presidente", 150, 83);
+        clubes[13] = new Club(214, "Roma", 1927, "Presidente", 120, 80);
+        clubes[14] = new Club(215, "Salernitana", 1919, "Presidente", 35, 64);
+        clubes[15] = new Club(216, "Sassuolo", 1920, "Presidente", 55, 69);
+        clubes[16] = new Club(217, "Torino", 1906, "Presidente", 65, 71);
+        clubes[17] = new Club(218, "Udinese", 1896, "Presidente", 55, 69);
+        clubes[18] = new Club(219, "Verona", 1903, "Presidente", 45, 66);
+        clubes[19] = new Club(220, "Venezia", 1907, "Presidente", 35, 64);
 
         return clubes;
     }
 
-
-    // ===============================
-//   BUNDESLIGA (Alemania)
-// ===============================
     public static Club[] crearClubesBundesliga() {
+        Club[] clubes = new Club[18];
 
-        Club bayern = new Club(301, "Bayern Munich", 1900, "Presidente", 30, 50);
-        Club leverkusen = new Club(302, "Bayer Leverkusen", 1904, "Presidente", 30, 50);
-        Club dortmund = new Club(303, "Borussia Dortmund", 1909, "Presidente", 30, 50);
-        Club leipzig = new Club(304, "RB Leipzig", 2009, "Presidente", 30, 50);
-        Club stuttgart = new Club(305, "VfB Stuttgart", 1893, "Presidente", 30, 50);
-        Club frankfurt = new Club(306, "Eintracht Frankfurt", 1899, "Presidente", 30, 50);
-        Club freiburg = new Club(307, "SC Freiburg", 1904, "Presidente", 30, 50);
-        Club hoffenheim = new Club(308, "TSG Hoffenheim", 1899, "Presidente", 30, 50);
-        Club heidenheim = new Club(309, "1. FC Heidenheim", 1846, "Presidente", 30, 50);
-        Club bremen = new Club(310, "Werder Bremen", 1899, "Presidente", 30, 50);
-        Club augsburg = new Club(311, "FC Augsburg", 1907, "Presidente", 30, 50);
-        Club wolfsburg = new Club(312, "VfL Wolfsburg", 1945, "Presidente", 30, 50);
-        Club mainz = new Club(313, "Mainz 05", 1905, "Presidente", 30, 50);
-        Club gladbach = new Club(314, "Borussia Mönchengladbach", 1900, "Presidente", 30, 50);
-        Club union = new Club(315, "Union Berlin", 1966, "Presidente", 30, 50);
-        Club bochum = new Club(316, "VfL Bochum", 1848, "Presidente", 30, 50);
-        Club kiel = new Club(317, "Holstein Kiel", 1900, "Presidente", 30, 50);
-        Club stpauli = new Club(318, "FC St. Pauli", 1910, "Presidente", 30, 50);
-
-        // Liga / Copa / UCL / Supercopa / Mundial
-        bayern.setPalmares(34, 20, 6, 11, 2);
-        leverkusen.setPalmares(1, 2, 0, 1, 0);
-        dortmund.setPalmares(8, 5, 1, 6, 0);
-        leipzig.setPalmares(0, 2, 0, 1, 0);
-        stuttgart.setPalmares(5, 4, 0, 1, 0);
-        frankfurt.setPalmares(1, 5, 0, 0, 0);
-        freiburg.setPalmares(0, 0, 0, 0, 0);
-        hoffenheim.setPalmares(0, 0, 0, 0, 0);
-        heidenheim.setPalmares(0, 0, 0, 0, 0);
-        bremen.setPalmares(4, 6, 0, 3, 0);
-        augsburg.setPalmares(0, 0, 0, 0, 0);
-        wolfsburg.setPalmares(1, 1, 0, 1, 0);
-        mainz.setPalmares(0, 0, 0, 0, 0);
-        gladbach.setPalmares(5, 3, 0, 0, 0);
-        union.setPalmares(0, 0, 0, 0, 0);
-        bochum.setPalmares(0, 0, 0, 0, 0);
-        kiel.setPalmares(0, 0, 0, 0, 0);
-        stpauli.setPalmares(0, 0, 0, 0, 0);
-
-        Club[] clubes = new Club[]{
-                bayern, leverkusen, dortmund, leipzig, stuttgart, frankfurt,
-                freiburg, hoffenheim, heidenheim, bremen, augsburg, wolfsburg,
-                mainz, gladbach, union, bochum, kiel, stpauli
-        };
-
-        for (Club c : clubes) {
-            if (c != null) c.setNombresTrofeos(
-                    "Bundesliga",
-                    "DFB-Pokal",
-                    "Champions League",
-                    "DFL-Supercup",
-                    "Mundial de Clubes"
-            );
-        }
+        clubes[0] = new Club(301, "Bayern", 1900, "Präsident", 250, 92);
+        clubes[1] = new Club(302, "Dortmund", 1909, "Präsident", 170, 85);
+        clubes[2] = new Club(303, "Leipzig", 2009, "Präsident", 150, 83);
+        clubes[3] = new Club(304, "Leverkusen", 1904, "Präsident", 160, 84);
+        clubes[4] = new Club(305, "Frankfurt", 1899, "Präsident", 110, 78);
+        clubes[5] = new Club(306, "Stuttgart", 1893, "Präsident", 85, 75);
+        clubes[6] = new Club(307, "Wolfsburg", 1945, "Präsident", 85, 74);
+        clubes[7] = new Club(308, "Gladbach", 1900, "Präsident", 80, 73);
+        clubes[8] = new Club(309, "Freiburg", 1904, "Präsident", 70, 72);
+        clubes[9] = new Club(310, "Mainz", 1905, "Präsident", 60, 70);
+        clubes[10] = new Club(311, "Augsburg", 1907, "Präsident", 55, 69);
+        clubes[11] = new Club(312, "Bremen", 1899, "Präsident", 70, 71);
+        clubes[12] = new Club(313, "Hoffenheim", 1899, "Präsident", 65, 70);
+        clubes[13] = new Club(314, "Union Berlin", 1966, "Präsident", 75, 72);
+        clubes[14] = new Club(315, "Bochum", 1848, "Präsident", 45, 66);
+        clubes[15] = new Club(316, "Heidenheim", 1846, "Präsident", 35, 64);
+        clubes[16] = new Club(317, "St. Pauli", 1910, "Präsident", 40, 65);
+        clubes[17] = new Club(318, "Hamburg", 1887, "Präsident", 60, 69);
 
         return clubes;
     }
 
-
-    // ===============================
-//   LIGUE 1 (Francia)
-// ===============================
     public static Club[] crearClubesLigue1() {
+        Club[] clubes = new Club[18];
 
-        Club psg = new Club(401, "Paris Saint-Germain", 1970, "Presidente", 30, 50);
-        Club marseille = new Club(402, "Olympique de Marseille", 1899, "Presidente", 30, 50);
-        Club monaco = new Club(403, "AS Monaco", 1924, "Presidente", 30, 50);
-        Club nice = new Club(404, "OGC Nice", 1904, "Presidente", 30, 50);
-        Club lille = new Club(405, "LOSC Lille", 1944, "Presidente", 30, 50);
-        Club lyon = new Club(406, "Olympique Lyonnais", 1950, "Presidente", 30, 50);
-        Club strasbourg = new Club(407, "RC Strasbourg", 1906, "Presidente", 30, 50);
-        Club rennes = new Club(408, "Stade Rennais", 1901, "Presidente", 30, 50);
-        Club lens = new Club(409, "RC Lens", 1906, "Presidente", 30, 50);
-        Club reims = new Club(410, "Stade de Reims", 1931, "Presidente", 30, 50);
-        Club toulouse = new Club(411, "Toulouse FC", 1970, "Presidente", 30, 50);
-        Club nantes = new Club(412, "FC Nantes", 1943, "Presidente", 30, 50);
-        Club brest = new Club(413, "Stade Brestois", 1950, "Presidente", 30, 50);
-        Club auxerre = new Club(414, "AJ Auxerre", 1905, "Presidente", 30, 50);
-        Club stEtienne = new Club(415, "AS Saint-Étienne", 1919, "Presidente", 30, 50);
-        Club lehavre = new Club(416, "Le Havre AC", 1872, "Presidente", 30, 50);
-        Club montpellier = new Club(417, "Montpellier HSC", 1919, "Presidente", 30, 50);
-        Club angers = new Club(418, "Angers SCO", 1919, "Presidente", 30, 50);
-
-        // Liga / Copa / UCL / Supercopa / Mundial
-        psg.setPalmares(13, 16, 1, 14, 0);
-        marseille.setPalmares(10, 10, 1, 2, 0);
-        monaco.setPalmares(8, 5, 0, 2, 0);
-        nice.setPalmares(4, 3, 0, 0, 0);
-        lille.setPalmares(4, 6, 0, 1, 0);
-        lyon.setPalmares(7, 5, 0, 8, 0);
-        strasbourg.setPalmares(1, 3, 0, 0, 0);
-        rennes.setPalmares(0, 3, 0, 0, 0);
-        lens.setPalmares(1, 0, 0, 0, 0);
-        reims.setPalmares(6, 2, 0, 0, 0);
-        toulouse.setPalmares(0, 1, 0, 0, 0);
-        nantes.setPalmares(8, 4, 0, 2, 0);
-        brest.setPalmares(0, 0, 0, 0, 0);
-        auxerre.setPalmares(1, 4, 0, 0, 0);
-        stEtienne.setPalmares(10, 6, 0, 0, 0);
-        lehavre.setPalmares(0, 1, 0, 0, 0);
-        montpellier.setPalmares(1, 2, 0, 0, 0);
-        angers.setPalmares(0, 0, 0, 0, 0);
-
-        Club[] clubes = new Club[]{
-                psg, marseille, monaco, nice, lille, lyon,
-                strasbourg, rennes, lens, reims, toulouse, nantes,
-                brest, auxerre, stEtienne, lehavre, montpellier, angers
-        };
-
-        for (Club c : clubes) {
-            if (c != null) c.setNombresTrofeos(
-                    "Ligue 1",
-                    "Coupe de France",
-                    "Champions League",
-                    "Trophée des Champions",
-                    "Mundial de Clubes"
-            );
-        }
+        clubes[0] = new Club(401, "PSG", 1970, "Président", 260, 92);
+        clubes[1] = new Club(402, "Marseille", 1899, "Président", 140, 81);
+        clubes[2] = new Club(403, "Lyon", 1950, "Président", 120, 78);
+        clubes[3] = new Club(404, "Monaco", 1924, "Président", 150, 82);
+        clubes[4] = new Club(405, "Lille", 1944, "Président", 115, 79);
+        clubes[5] = new Club(406, "Rennes", 1901, "Président", 105, 77);
+        clubes[6] = new Club(407, "Nice", 1904, "Président", 100, 76);
+        clubes[7] = new Club(408, "Lens", 1906, "Président", 85, 74);
+        clubes[8] = new Club(409, "Nantes", 1943, "Président", 65, 70);
+        clubes[9] = new Club(410, "Montpellier", 1919, "Président", 60, 69);
+        clubes[10] = new Club(411, "Strasbourg", 1906, "Président", 75, 72);
+        clubes[11] = new Club(412, "Reims", 1931, "Président", 65, 70);
+        clubes[12] = new Club(413, "Toulouse", 1937, "Président", 60, 69);
+        clubes[13] = new Club(414, "Brest", 1950, "Président", 55, 68);
+        clubes[14] = new Club(415, "Angers", 1919, "Président", 40, 65);
+        clubes[15] = new Club(416, "Auxerre", 1905, "Président", 45, 66);
+        clubes[16] = new Club(417, "Le Havre", 1872, "Président", 35, 64);
+        clubes[17] = new Club(418, "Metz", 1932, "Président", 35, 64);
 
         return clubes;
     }
 
-    // ========================================================
-    //   LALIGA HYPERMOTION / COPA DEL REY
-    // ========================================================
-    public static Club[] crearClubesHypermotion() {
+    private static void generarPlantillaAleatoria(Club club, int numPrimerEquipo, int numCantera, String temporada) {
+        if (club == null) {
+            return;
+        }
 
-        Club lasPalmas = new Club(601, "UD Las Palmas", 1949, "Presidente", 30, 50);
-        Club leganes = new Club(602, "CD Leganés", 1928, "Presidente", 30, 50);
-        Club valladolid = new Club(603, "Real Valladolid", 1928, "Presidente", 30, 50);
-        Club almeria = new Club(604, "UD Almería", 1989, "Presidente", 30, 50);
-        Club granada = new Club(605, "Granada CF", 1931, "Presidente", 30, 50);
-        Club cadiz = new Club(606, "Cádiz CF", 1910, "Presidente", 30, 50);
-        Club eibar = new Club(607, "SD Eibar", 1940, "Presidente", 30, 50);
-        Club sporting = new Club(608, "Real Sporting de Gijón", 1905, "Presidente", 30, 50);
-        Club racing = new Club(609, "Racing de Santander", 1913, "Presidente", 30, 50);
-        Club burgos = new Club(610, "Burgos CF", 1985, "Presidente", 30, 50);
-        Club racingFerrol = new Club(611, "Racing de Ferrol", 1919, "Presidente", 30, 50);
-        Club tenerife = new Club(612, "CD Tenerife", 1922, "Presidente", 30, 50);
-        Club albacete = new Club(613, "Albacete Balompié", 1940, "Presidente", 30, 50);
-        Club zaragoza = new Club(614, "Real Zaragoza", 1932, "Presidente", 30, 50);
-        Club cartagena = new Club(615, "FC Cartagena", 1995, "Presidente", 30, 50);
-        Club mirandes = new Club(616, "CD Mirandés", 1927, "Presidente", 30, 50);
-        Club eldense = new Club(617, "CD Eldense", 1921, "Presidente", 30, 50);
-        Club huesca = new Club(618, "SD Huesca", 1960, "Presidente", 30, 50);
-        Club castellon = new Club(619, "CD Castellón", 1922, "Presidente", 30, 50);
-        Club deportivo = new Club(620, "Deportivo de La Coruña", 1906, "Presidente", 30, 50);
-        Club malaga = new Club(621, "Málaga CF", 1904, "Presidente", 30, 50);
-        Club cordoba = new Club(622, "Córdoba CF", 1954, "Presidente", 30, 50);
+        Random r = new Random();
 
-        // --- PALMARÉS SEGUNDA ---
-        lasPalmas.setPalmares(0, 0, 0, 0, 0);
-        leganes.setPalmares(0, 0, 0, 0, 0);
-        valladolid.setPalmares(0, 0, 0, 0, 0);
-        almeria.setPalmares(0, 0, 0, 0, 0);
-        granada.setPalmares(0, 0, 0, 0, 0);
-        cadiz.setPalmares(0, 0, 0, 0, 0);
-        eibar.setPalmares(0, 0, 0, 0, 0);
-        sporting.setPalmares(0, 0, 0, 0, 0);
-        racing.setPalmares(0, 0, 0, 0, 0);
-        burgos.setPalmares(0, 0, 0, 0, 0);
-        racingFerrol.setPalmares(0, 0, 0, 0, 0);
-        tenerife.setPalmares(0, 0, 0, 0, 0);
-        albacete.setPalmares(0, 0, 0, 0, 0);
-        zaragoza.setPalmares(0, 6, 0, 1, 0);
-        cartagena.setPalmares(0, 0, 0, 0, 0);
-        mirandes.setPalmares(0, 0, 0, 0, 0);
-        eldense.setPalmares(0, 0, 0, 0, 0);
-        huesca.setPalmares(0, 0, 0, 0, 0);
-        castellon.setPalmares(0, 0, 0, 0, 0);
-        deportivo.setPalmares(1, 2, 0, 3, 0);
-        malaga.setPalmares(0, 0, 0, 0, 0);
-        cordoba.setPalmares(0, 0, 0, 0, 0);
-
-        Club[] clubes = new Club[]{
-                lasPalmas, leganes, valladolid, almeria, granada, cadiz,
-                eibar, sporting, racing, burgos, racingFerrol, tenerife,
-                albacete, zaragoza, cartagena, mirandes, eldense, huesca,
-                castellon, deportivo, malaga, cordoba
+        String[] nombres = {
+                "Antonio", "Raul", "Carlos", "Lucas", "Daniel", "Sergio", "Mario", "Jorge", "Adrian", "Pablo", "Hector", "Ivan",
+                "Alejandro", "Nacho", "Alvaro", "Gonzalo", "David", "Miguel", "Ruben", "Oscar", "Javier", "Fran", "Marcos", "Victor",
+                "Iker", "Unai", "Aitor", "Ander", "Mikel", "Asier", "Eneko", "Xabier", "Julen", "Gaizka",
+                "Manuel", "Jose", "Juan", "Pedro", "Luis", "Ramon", "Fernando", "Joaquin", "Angel", "Andres", "Enrique", "Alfonso",
+                "Diego", "Mateo", "Nicolas", "Sebastian", "Agustin", "Facundo", "Santiago", "Emiliano", "Julian", "Tomas", "Martin",
+                "Valentin", "Lautaro", "Thiago", "Bruno", "Benjamin", "Felipe", "Cristian", "Federico", "Rodrigo", "Maximo",
+                "Leonardo", "Matias", "Kevin", "Axel", "Alan", "Dylan", "Izan", "Hugo", "Eric", "Alex",
+                "Pau", "Pol", "Oriol", "Sergi", "Gerard", "Marc", "Roger", "Xavi", "Carles", "Joan",
+                "Nuno", "Tiago", "Joao", "Andre", "Rui", "Bruno", "Diogo", "Goncalo",
+                "Marco", "Luca", "Matteo", "Alessandro", "Andrea", "Federico", "Giovanni", "Nicolo", "Davide", "Simone",
+                "Pierre", "Louis", "Theo", "Antoine", "Mathis", "Baptiste", "Romain",
+                "Max", "Jonas", "Felix", "Niklas", "Timo", "Julian", "Leon", "Noah", "Finn",
+                "Adam", "Oskar", "Kacper", "Milan", "Artem", "Denis", "Dusan", "Marko", "Luka", "Nikola"
         };
 
-        for (Club c : clubes) {
-            if (c != null) c.setNombresTrofeos(
-                    "LaLigaHypermotion",
-                    "Copa del Rey",
-                    "Champions League",
-                    "Supercopa de España",
-                    "Mundial de Clubes"
-            );
+        String[] apellidos = {
+                "Garcia", "Fernandez", "Lopez", "Gonzalez", "Rodriguez", "Sanchez", "Perez", "Martin", "Gomez", "Ruiz", "Hernandez", "Diaz",
+                "Moreno", "Muñoz", "Alonso", "Romero", "Navarro", "Torres", "Dominguez", "Vazquez", "Ramos", "Serrano", "Molina", "Ortega",
+                "Delgado", "Castro", "Suarez", "Iglesias", "Navas", "Campos", "Crespo", "Calvo", "Vidal", "Santos", "Cano", "Flores",
+                "Herrera", "Marin", "Prieto", "Mendez", "Leon", "Gallardo", "Pascual", "Rey", "Cortes", "Guerrero", "Rojas", "Silva",
+                "Paredes", "Medina", "Aguilar", "Figueroa", "Carrasco", "Pineda", "Salazar", "Mendoza", "Valdez", "Cabrera", "Montoya",
+                "Benitez", "Peralta", "Zamora", "Quintero", "Escobar", "Araya", "Bravo", "Cifuentes", "Jaramillo", "Villalba", "Cardozo",
+                "Costa", "Pereira", "Ferreira", "Carvalho", "Araujo", "Neves", "Dias", "Teixeira", "Gomes",
+                "Rossi", "Bianchi", "Conti", "Romano", "Gallo", "Ferrari", "Greco", "Moretti", "Lombardi", "Ricci",
+                "Dubois", "Lefevre", "Moreau", "Laurent", "Bernard", "Thomas", "Roux", "Fournier",
+                "Muller", "Schmidt", "Schneider", "Fischer", "Weber", "Meyer", "Wagner", "Becker", "Hoffmann",
+                "Nowak", "Kowalski", "Wojcik", "Zielinski", "Jankowski",
+                "Petrov", "Ivanov", "Smirnov", "Sokolov", "Popov", "Volkov",
+                "Markovic", "Jovanovic", "Nikolic", "Stojanovic", "Dimitrov", "Kovacevic"
+        };
+
+        Posicion[] rotacion = {
+                Posicion.POR, Posicion.POR,
+                Posicion.LD, Posicion.DFC, Posicion.DFC, Posicion.LI,
+                Posicion.MCD, Posicion.MC, Posicion.MC, Posicion.MCO,
+                Posicion.EI, Posicion.ED,
+                Posicion.DC, Posicion.DC
+        };
+
+        for (int i = 0; i < numPrimerEquipo; i++) {
+            int dorsal = i + 1;
+            if (dorsal > 25) {
+                dorsal = 25;
+            }
+
+            String nombre = nombreAleatorio(nombres, apellidos, r);
+            int edad = 18 + r.nextInt(18);
+            Posicion pos = rotacion[i % rotacion.length];
+
+            double valor = valorMercadoAleatorio(pos, r);
+            int media = mediaAleatoria(pos, r);
+
+            Jugador j = new Jugador(dorsal, nombre, edad, pos, valor, media);
+            j.setTemporada(temporada);
+
+            int partidos = 5 + r.nextInt(26);
+            int minutos = partidos * (40 + r.nextInt(55));
+            j.setPartidos(partidos);
+            j.setMinutos(minutos);
+
+            if (pos == Posicion.POR) {
+                j.setPorteriasCero(r.nextInt(11));
+                j.setAmarillas(r.nextInt(3));
+                j.setRojas(r.nextInt(2));
+            } else {
+                j.setGoles(golesAleatorios(pos, r));
+                j.setAsistencias(asistenciasAleatorias(pos, r));
+                j.setAmarillas(r.nextInt(7));
+                j.setRojas(r.nextInt(2));
+            }
+
+            club.anadirPrimerEquipo(j);
         }
 
-        return clubes;
+        for (int i = 0; i < numCantera; i++) {
+            int dorsal = 31 + i;
+
+            String nombre = nombreAleatorio(nombres, apellidos, r);
+            int edad = 16 + r.nextInt(6);
+            Posicion pos = rotacion[(i + 3) % rotacion.length];
+
+            double valor = 0.1 + (r.nextInt(20) / 10.0);
+            int media = 55 + r.nextInt(16);
+
+            Jugador c = new Jugador(dorsal, nombre, edad, pos, valor, media);
+            c.setTemporada(temporada);
+
+            int partidos = r.nextInt(10);
+            int minutos = partidos * (20 + r.nextInt(50));
+            c.setPartidos(partidos);
+            c.setMinutos(minutos);
+
+            if (pos == Posicion.POR) {
+                c.setPorteriasCero(r.nextInt(4));
+                c.setAmarillas(r.nextInt(3));
+            } else {
+                c.setGoles(r.nextInt(5));
+                c.setAsistencias(r.nextInt(5));
+                c.setAmarillas(r.nextInt(4));
+            }
+
+            club.anadirCantera(c);
+        }
     }
 
-    private static void cargarAlaves(Club alaves) {
-        if (alaves == null) return;
+    private static String nombreAleatorio(String[] nombres, String[] apellidos, Random r) {
+        String n = nombres[r.nextInt(nombres.length)];
+        String a1 = apellidos[r.nextInt(apellidos.length)];
+        String a2 = apellidos[r.nextInt(apellidos.length)];
 
-        Jugador j1 = new Jugador(1, "Antonio Sivera", 29, "POR", 6.0, 78);
-        j1.setTemporada("2024/25");
-        j1.setPartidos(18);
-        j1.setMinutos(1620);
-        j1.setPorteriasCero(6);
-        j1.setAmarillas(1);
-
-        Jugador j2 = new Jugador(13, "Raul Fernandez", 37, "POR", 0.2, 71);
-        j2.setTemporada("2024/25");
-        j2.setPartidos(6);
-        j2.setMinutos(540);
-        j2.setPorteriasCero(2);
-
-        Jugador j3 = new Jugador(7, "Carlos Vicente", 26, "ED", 7.0, 76);
-        j3.setTemporada("2024/25");
-        j3.setPartidos(21);
-        j3.setMinutos(1250);
-        j3.setGoles(8);
-        j3.setAsistencias(3);
-        j3.setAmarillas(1);
-
-        Jugador j4 = new Jugador(15, "Lucas Boye", 29, "DC", 5.0, 75);
-        j4.setTemporada("2024/25");
-        j4.setPartidos(14);
-        j4.setMinutos(978);
-        j4.setGoles(4);
-        j4.setAmarillas(1);
-
-        Jugador[] listaPrimerEquipo = {j1, j2, j3, j4};
-        for (int i = 0; i < listaPrimerEquipo.length; i++) {
-            alaves.añadirPrimerEquipo(listaPrimerEquipo[i]);
+        while (a2.equals(a1)) {
+            a2 = apellidos[r.nextInt(apellidos.length)];
         }
 
-        Jugador c1 = new Jugador(31, "Iker Aramburu", 19, "POR", 0.4, 64);
-        Jugador c2 = new Jugador(44, "Adrian Paredes", 19, "DC", 0.8, 68);
+        return n + " " + a1 + " " + a2;
+    }
 
-        Jugador[] listaCantera = {c1, c2};
-        for (int i = 0; i < listaCantera.length; i++) {
-            alaves.añadirCantera(listaCantera[i]);
+    private static double valorMercadoAleatorio(Posicion pos, Random r) {
+        double base;
+
+        if (pos == Posicion.DC) {
+            base = 20.0 + r.nextInt(180);
+        } else if (pos == Posicion.MCO) {
+            base = 15.0 + r.nextInt(140);
+        } else if (pos == Posicion.EI || pos == Posicion.ED) {
+            base = 10.0 + r.nextInt(130);
+        } else if (pos == Posicion.POR) {
+            base = 5.0 + r.nextInt(60);
+        } else if (pos == Posicion.MCD || pos == Posicion.MC) {
+            base = 8.0 + r.nextInt(90);
+        } else {
+            base = 4.0 + r.nextInt(70);
+        }
+
+        int dec = (int) (base * 10);
+        return dec / 10.0;
+    }
+
+    private static int mediaAleatoria(Posicion pos, Random r) {
+        int m;
+
+        if (pos == Posicion.DC) {
+            m = 70 + r.nextInt(25);
+        } else if (pos == Posicion.MCO) {
+            m = 68 + r.nextInt(24);
+        } else if (pos == Posicion.EI || pos == Posicion.ED) {
+            m = 66 + r.nextInt(26);
+        } else if (pos == Posicion.POR) {
+            m = 65 + r.nextInt(24);
+        } else if (pos == Posicion.MCD || pos == Posicion.MC) {
+            m = 64 + r.nextInt(24);
+        } else {
+            m = 62 + r.nextInt(23);
+        }
+
+        if (m > 94) {
+            m = 94;
+        }
+
+        return m;
+    }
+
+    private static int golesAleatorios(Posicion pos, Random r) {
+        if (pos == Posicion.DC) {
+            return r.nextInt(21);
+        }
+        if (pos == Posicion.EI || pos == Posicion.ED || pos == Posicion.MCO) {
+            return r.nextInt(12);
+        }
+        if (pos == Posicion.MC || pos == Posicion.MCD) {
+            return r.nextInt(6);
+        }
+        return r.nextInt(4);
+    }
+
+    private static int asistenciasAleatorias(Posicion pos, Random r) {
+        if (pos == Posicion.DC) {
+            return r.nextInt(8);
+        }
+        if (pos == Posicion.EI || pos == Posicion.ED || pos == Posicion.MCO) {
+            return r.nextInt(12);
+        }
+        if (pos == Posicion.MC || pos == Posicion.MCD) {
+            return r.nextInt(8);
+        }
+        return r.nextInt(5);
+    }
+
+    public static Club[] crearClubesChampionsTop16() {
+
+        Club[] laliga = crearClubesLaLiga();
+        Club[] premier = crearClubesPremierLeague();
+        Club[] serieA = crearClubesSerieA();
+        Club[] bundes = crearClubesBundesliga();
+        Club[] ligue1 = crearClubesLigue1();
+
+        ordenarPorNivelDesc(laliga);
+        ordenarPorNivelDesc(premier);
+        ordenarPorNivelDesc(serieA);
+        ordenarPorNivelDesc(bundes);
+        ordenarPorNivelDesc(ligue1);
+
+        Club[] top16 = new Club[16];
+        int pos = 0;
+
+        pos = meterTopN(top16, pos, laliga, 3);
+        pos = meterTopN(top16, pos, premier, 3);
+        pos = meterTopN(top16, pos, serieA, 3);
+        pos = meterTopN(top16, pos, bundes, 3);
+        pos = meterTopN(top16, pos, ligue1, 3);
+
+        Club[] bolsa = unir5(laliga, premier, serieA, bundes, ligue1);
+        ordenarPorNivelDesc(bolsa);
+
+        int i = 0;
+        while (pos < top16.length && i < bolsa.length) {
+            if (bolsa[i] != null && !estaEn(top16, pos, bolsa[i])) {
+                top16[pos] = bolsa[i];
+                pos++;
+            }
+            i++;
+        }
+
+        cargarPlantillasAleatorias(top16, 22, 6, "2024/25");
+        return top16;
+    }
+
+    public static Club[] crearClubesEuropaLeagueTop16() {
+
+        Club[] laliga = crearClubesLaLiga();
+        Club[] premier = crearClubesPremierLeague();
+        Club[] serieA = crearClubesSerieA();
+        Club[] bundes = crearClubesBundesliga();
+        Club[] ligue1 = crearClubesLigue1();
+
+        Club[] bolsa = unir5(laliga, premier, serieA, bundes, ligue1);
+        ordenarPorNivelDesc(bolsa);
+
+        Club[] res = new Club[16];
+
+        int pos = 0;
+        int i = 16;
+
+        while (pos < res.length && i < bolsa.length) {
+            if (bolsa[i] != null && !estaEn(res, pos, bolsa[i])) {
+                res[pos] = bolsa[i];
+                pos++;
+            }
+            i++;
+        }
+
+        cargarPlantillasAleatorias(res, 22, 6, "2025/26");
+        return res;
+    }
+
+    private static void ordenarPorNivelDesc(Club[] clubes) {
+        if (clubes == null) {
+            return;
+        }
+
+        boolean cambio = true;
+        while (cambio) {
+            cambio = false;
+
+            for (int i = 0; i < clubes.length - 1; i++) {
+                Club a = clubes[i];
+                Club b = clubes[i + 1];
+
+                int nivelA = -1;
+                int nivelB = -1;
+
+                if (a != null) {
+                    nivelA = a.getNivel();
+                }
+                if (b != null) {
+                    nivelB = b.getNivel();
+                }
+
+                if (nivelA < nivelB) {
+                    clubes[i] = b;
+                    clubes[i + 1] = a;
+                    cambio = true;
+                }
+            }
         }
     }
 
-    private static void cargarRealMadrid(Club madrid) {
-        if (madrid == null) return;
+    private static Club[] unir5(Club[] a, Club[] b, Club[] c, Club[] d, Club[] e) {
+        int total = 0;
 
-        Jugador j1 = new Jugador(1, "Thibaut Courtois", 33, "POR", 18.0, 88);
-        Jugador j2 = new Jugador(5, "Jude Bellingham", 22, "MCO", 160.0, 91);
-        Jugador j3 = new Jugador(10, "Kylian Mbappe", 27, "DC", 200.0, 94);
-
-
-        Jugador[] listaPrimerEquipo = {j1, j2, j3};
-        for (int i = 0; i < listaPrimerEquipo.length; i++) {
-            madrid.añadirPrimerEquipo(listaPrimerEquipo[i]);
+        if (a != null) {
+            total += a.length;
+        }
+        if (b != null) {
+            total += b.length;
+        }
+        if (c != null) {
+            total += c.length;
+        }
+        if (d != null) {
+            total += d.length;
+        }
+        if (e != null) {
+            total += e.length;
         }
 
-        Jugador c1 = new Jugador(25, "Sergio Mestre", 20, "POR", 0.05, 66);
-        madrid.añadirCantera(c1);
+        Club[] res = new Club[total];
+        int pos = 0;
+
+        pos = copiar(res, pos, a);
+        pos = copiar(res, pos, b);
+        pos = copiar(res, pos, c);
+        pos = copiar(res, pos, d);
+        pos = copiar(res, pos, e);
+
+        return res;
     }
 
+    private static int copiar(Club[] destino, int pos, Club[] origen) {
+        if (destino == null) {
+            return pos;
+        }
+        if (origen == null) {
+            return pos;
+        }
+
+        for (int i = 0; i < origen.length && pos < destino.length; i++) {
+            destino[pos] = origen[i];
+            pos++;
+        }
+
+        return pos;
+    }
+
+    private static int meterTopN(Club[] destino, int pos, Club[] origen, int n) {
+        if (destino == null) {
+            return pos;
+        }
+        if (origen == null) {
+            return pos;
+        }
+
+        int i = 0;
+        while (i < origen.length && n > 0 && pos < destino.length) {
+            if (origen[i] != null) {
+                destino[pos] = origen[i];
+                pos++;
+                n--;
+            }
+            i++;
+        }
+
+        return pos;
+    }
+
+    private static boolean estaEn(Club[] lista, int usados, Club c) {
+        if (lista == null) {
+            return false;
+        }
+        if (c == null) {
+            return false;
+        }
+
+        int i = 0;
+        while (i < usados) {
+            if (lista[i] == c) {
+                return true;
+            }
+            i++;
+        }
+
+        return false;
+    }
 }

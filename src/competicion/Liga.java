@@ -10,7 +10,7 @@ public class Liga extends Competicion {
     private Club[] equipos;
     private int totalEquipos;
 
-    private Partido[][] jornadas;
+    private Jornada[] jornadas;
     private int totalJornadas;
     private int partidosPorJornada;
     private int jornadaEnCurso;
@@ -20,16 +20,22 @@ public class Liga extends Competicion {
     private String[] resultadosUltimaJornada;
     private int numResultadosUltimaJornada;
 
+    private String[] resultadosUltimoEquipo;
+    private int numResultadosUltimoEquipo;
+
+    private Club[] ganadoresUltimaJornada;
+    private int numGanadoresUltimaJornada;
+
     private Random rnd;
 
-    public Liga() {
-        super("Liga");
+    public Liga(String nombre) {
+        super(nombre);
         this.rnd = new Random();
 
         this.equipos = new Club[0];
         this.totalEquipos = 0;
 
-        this.jornadas = new Partido[0][0];
+        this.jornadas = new Jornada[0];
         this.totalJornadas = 0;
         this.partidosPorJornada = 0;
         this.jornadaEnCurso = 0;
@@ -43,7 +49,12 @@ public class Liga extends Competicion {
         this.puntos = new int[0];
 
         this.resultadosUltimaJornada = new String[1];
+        this.resultadosUltimoEquipo = new String[1];
         this.numResultadosUltimaJornada = 0;
+        this.numResultadosUltimoEquipo = 0;
+
+        this.ganadoresUltimaJornada = new Club[1];
+        this.numGanadoresUltimaJornada = 0;
     }
 
     public Liga(String nombre, Club[] clubes) {
@@ -65,6 +76,7 @@ public class Liga extends Competicion {
             }
         }
 
+        this.jornadas = new Jornada[0];
         this.jornadaEnCurso = 0;
         this.totalJornadas = 0;
         this.partidosPorJornada = 0;
@@ -78,9 +90,17 @@ public class Liga extends Competicion {
         this.puntos = new int[this.totalEquipos];
 
         int tam = this.totalEquipos / 2;
-        if (tam <= 0) tam = 1;
+        if (tam <= 0) {
+            tam = 1;
+        }
+
         this.resultadosUltimaJornada = new String[tam];
+        this.resultadosUltimoEquipo = new String[tam];
         this.numResultadosUltimaJornada = 0;
+        this.numResultadosUltimoEquipo = 0;
+
+        this.ganadoresUltimaJornada = new Club[tam];
+        this.numGanadoresUltimaJornada = 0;
     }
 
     @Override
@@ -95,7 +115,7 @@ public class Liga extends Competicion {
         System.out.println("==========================================");
 
         if (totalEquipos < 2) {
-            this.jornadas = new Partido[0][0];
+            this.jornadas = new Jornada[0];
             this.totalJornadas = 0;
             this.partidosPorJornada = 0;
             setGenerada(true);
@@ -106,10 +126,14 @@ public class Liga extends Competicion {
         }
 
         boolean hayDescanso = false;
-        if (totalEquipos % 2 != 0) hayDescanso = true;
+        if (totalEquipos % 2 != 0) {
+            hayDescanso = true;
+        }
 
         int n = totalEquipos;
-        if (hayDescanso) n = totalEquipos + 1;
+        if (hayDescanso) {
+            n = totalEquipos + 1;
+        }
 
         Club[] ordenEquipos = new Club[n];
         for (int i = 0; i < totalEquipos; i++) {
@@ -125,10 +149,12 @@ public class Liga extends Competicion {
         this.partidosPorJornada = n / 2;
         this.totalJornadas = jornadasIda * 2;
 
-        this.jornadas = new Partido[totalJornadas][partidosPorJornada];
+        this.jornadas = new Jornada[totalJornadas];
 
         System.out.print("Clubes: " + totalEquipos);
-        if (hayDescanso) System.out.print(" (1 descanso)");
+        if (hayDescanso) {
+            System.out.print(" (1 descanso)");
+        }
         System.out.println();
 
         System.out.println("Jornadas: " + totalJornadas + " (Ida " + jornadasIda + " | Vuelta " + jornadasIda + ")");
@@ -137,15 +163,19 @@ public class Liga extends Competicion {
 
         for (int numJornada = 0; numJornada < jornadasIda; numJornada++) {
 
+            Partido[] partidos = new Partido[partidosPorJornada];
+
             for (int numPartido = 0; numPartido < partidosPorJornada; numPartido++) {
                 Club equipoA = ordenEquipos[numPartido];
                 Club equipoB = ordenEquipos[n - 1 - numPartido];
 
                 if (equipoA == null || equipoB == null) {
-                    jornadas[numJornada][numPartido] = null;
+                    partidos[numPartido] = null;
                 } else {
                     boolean invertirLocalia = false;
-                    if (numJornada % 2 != 0) invertirLocalia = true;
+                    if (numJornada % 2 != 0) {
+                        invertirLocalia = true;
+                    }
 
                     Club local;
                     Club visitante;
@@ -158,28 +188,46 @@ public class Liga extends Competicion {
                         visitante = equipoB;
                     }
 
-                    jornadas[numJornada][numPartido] = new Partido(local, visitante);
+                    partidos[numPartido] = new Partido(local, visitante);
                 }
             }
 
+            this.jornadas[numJornada] = new Jornada(numJornada + 1, partidos);
             rotarOrden(ordenEquipos);
         }
 
         for (int numJornada = 0; numJornada < jornadasIda; numJornada++) {
+            Jornada ida = this.jornadas[numJornada];
+            Partido[] idaPartidos;
+
+            if (ida == null) {
+                idaPartidos = new Partido[partidosPorJornada];
+            } else {
+                idaPartidos = ida.getPartidos();
+            }
+
+            Partido[] vuelta = new Partido[partidosPorJornada];
+
             for (int numPartido = 0; numPartido < partidosPorJornada; numPartido++) {
-                Partido partidoIda = jornadas[numJornada][numPartido];
+                Partido partidoIda = idaPartidos[numPartido];
 
                 if (partidoIda == null) {
-                    jornadas[jornadasIda + numJornada][numPartido] = null;
+                    vuelta[numPartido] = null;
                 } else {
-                    jornadas[jornadasIda + numJornada][numPartido] =
-                            new Partido(partidoIda.getEquipoVisitante(), partidoIda.getEquipoLocal());
+                    vuelta[numPartido] = new Partido(partidoIda.getEquipoVisitante(), partidoIda.getEquipoLocal());
                 }
             }
+
+            this.jornadas[jornadasIda + numJornada] = new Jornada(jornadasIda + numJornada + 1, vuelta);
         }
 
+        this.ganadoresUltimaJornada = new Club[partidosPorJornada];
+        this.numGanadoresUltimaJornada = 0;
+
         this.resultadosUltimaJornada = new String[partidosPorJornada];
+        this.resultadosUltimoEquipo = new String[partidosPorJornada];
         this.numResultadosUltimaJornada = 0;
+        this.numResultadosUltimoEquipo = 0;
 
         this.jornadaEnCurso = 0;
         reiniciarTabla();
@@ -187,14 +235,46 @@ public class Liga extends Competicion {
         setGenerada(true);
         setTerminada(false);
 
-        System.out.println("Calendario generado (ida/vuelta).");
+        System.out.println("Calendario generado.");
         System.out.println("Listo para simular jornadas.");
         System.out.println("==========================================\n");
     }
 
     @Override
     public boolean simularRonda(boolean verEnDirecto) {
-        if (!isGenerada()) generar();
+        return simularRondaMotor(true, null, verEnDirecto);
+    }
+
+    public boolean simularRondaSoloEquipo(Club equipo, boolean verEnDirectoEquipo) {
+        return simularRondaMotor(false, equipo, verEnDirectoEquipo);
+    }
+
+    public boolean simularHastaJornada(int jornadaObjetivo) {
+        if (!isGenerada()) {
+            generar();
+        }
+
+        if (jornadaObjetivo < 1) {
+            jornadaObjetivo = 1;
+        }
+        if (jornadaObjetivo > totalJornadas) {
+            jornadaObjetivo = totalJornadas;
+        }
+
+        while (!haTerminado() && jornadaEnCurso < jornadaObjetivo) {
+            simularRondaMotor(false, null, false);
+        }
+
+        return true;
+    }
+
+    private boolean simularRondaMotor(boolean mostrarTodosLosResultados, Club equipoSolo, boolean verEnDirecto) {
+
+        if (!isGenerada()) {
+            generar();
+        }
+
+        numGanadoresUltimaJornada = 0;
 
         if (haTerminado()) {
             System.out.println("La liga ya terminó.");
@@ -207,31 +287,70 @@ public class Liga extends Competicion {
             return false;
         }
 
-        System.out.println("\n------------------------------------------");
-        System.out.println(getNombre().toUpperCase() + " | JORNADA " + (jornadaEnCurso + 1) + "/" + totalJornadas);
-        System.out.println("------------------------------------------");
+        if (mostrarTodosLosResultados) {
+            System.out.println(getNombre().toUpperCase() + " | JORNADA " + (jornadaEnCurso + 1) + "/" + totalJornadas);
+        }
 
-        Partido[] listaPartidos = jornadas[jornadaEnCurso];
-        numResultadosUltimaJornada = 0;
+        Jornada jornada = jornadas[jornadaEnCurso];
+        resetResultados();
+
+        Partido[] listaPartidos;
+        if (jornada == null) {
+            listaPartidos = null;
+        } else {
+            listaPartidos = jornada.getPartidos();
+        }
 
         if (listaPartidos != null) {
             for (int i = 0; i < listaPartidos.length; i++) {
                 Partido partido = listaPartidos[i];
-                if (partido == null) continue;
+                if (partido == null) {
+                    continue;
+                }
+                if (partido.isJugado()) {
+                    continue;
+                }
 
-                partido.simular(verEnDirecto);
+                boolean esPartidoDelEquipo = false;
+                if (equipoSolo != null && partido.participa(equipoSolo)) {
+                    esPartidoDelEquipo = true;
+                }
+
+                boolean verEsteEnDirecto = false;
+                if (equipoSolo != null) {
+                    if (verEnDirecto && esPartidoDelEquipo) {
+                        verEsteEnDirecto = true;
+                    }
+                } else {
+                    if (verEnDirecto) {
+                        verEsteEnDirecto = true;
+                    }
+                }
+
+                partido.simular(verEsteEnDirecto);
                 actualizarTabla(partido);
+                registrarGanador(partido);
 
-                if (numResultadosUltimaJornada < resultadosUltimaJornada.length) {
-                    resultadosUltimaJornada[numResultadosUltimaJornada] = partido.toString();
-                    numResultadosUltimaJornada++;
+                guardarResultadoJornada(partido);
+
+                if (equipoSolo != null && esPartidoDelEquipo) {
+                    guardarResultadoEquipo(partido);
                 }
             }
         }
 
-        System.out.println("\nRESULTADOS:");
-        for (int i = 0; i < numResultadosUltimaJornada; i++) {
-            System.out.println(" - " + resultadosUltimaJornada[i]);
+        if (mostrarTodosLosResultados) {
+            System.out.println("\nRESULTADOS:");
+            for (int i = 0; i < numResultadosUltimaJornada; i++) {
+                System.out.println(" - " + resultadosUltimaJornada[i]);
+            }
+        } else {
+            if (equipoSolo != null) {
+                System.out.println("\nPARTIDO DEL EQUIPO:");
+                for (int i = 0; i < numResultadosUltimoEquipo; i++) {
+                    System.out.println(" - " + resultadosUltimoEquipo[i]);
+                }
+            }
         }
 
         jornadaEnCurso++;
@@ -244,68 +363,153 @@ public class Liga extends Competicion {
         return true;
     }
 
-    public boolean simularRonda(Club clubSeguido, boolean verEnDirectoSeguido) {
-
-        if (!isGenerada()) generar();
+    public boolean simularPartidoEnVivo(int indiceSeleccion) {
+        if (!isGenerada()) {
+            generar();
+        }
 
         if (haTerminado()) {
-            System.out.println("La liga ya terminó.");
+            System.out.println("La liga ya termino.");
             return false;
         }
 
-        if (jornadaEnCurso >= totalJornadas) {
+        if (jornadaEnCurso < 0 || jornadaEnCurso >= totalJornadas) {
             setTerminada(true);
-            System.out.println("Temporada completada.");
             return false;
         }
 
-        System.out.println("\n------------------------------------------");
-        System.out.println(getNombre().toUpperCase() + " | JORNADA " + (jornadaEnCurso + 1) + "/" + totalJornadas);
-        if (clubSeguido != null) {
-            System.out.println("MODO CARRERA | Equipo seguido: " + clubSeguido.getNombre());
+        Jornada jornada = jornadas[jornadaEnCurso];
+        if (jornada == null) {
+            return false;
         }
-        System.out.println("------------------------------------------");
 
-        Partido[] listaPartidos = jornadas[jornadaEnCurso];
-        numResultadosUltimaJornada = 0;
+        Partido[] listaPartidos = jornada.getPartidos();
+        if (listaPartidos == null || listaPartidos.length == 0) {
+            return false;
+        }
 
-        if (listaPartidos != null) {
-            for (int i = 0; i < listaPartidos.length; i++) {
-                Partido partido = listaPartidos[i];
-                if (partido == null) continue;
+        int[] indices = new int[listaPartidos.length];
+        int totalDisponibles = 0;
 
-                boolean verEsteEnDirecto = false;
-                if (verEnDirectoSeguido && clubSeguido != null && partido.participa(clubSeguido)) {
-                    verEsteEnDirecto = true;
-                }
+        for (int i = 0; i < listaPartidos.length; i++) {
+            Partido p = listaPartidos[i];
+            if (p == null) {
+                continue;
+            }
+            if (p.isJugado()) {
+                continue;
+            }
+            indices[totalDisponibles] = i;
+            totalDisponibles++;
+        }
 
-                partido.simular(verEsteEnDirecto);
-                actualizarTabla(partido);
+        if (totalDisponibles == 0) {
+            System.out.println("No hay partidos disponibles en la jornada actual.");
+            return false;
+        }
 
-                if (numResultadosUltimaJornada < resultadosUltimaJornada.length) {
-                    String texto = partido.toString();
-                    if (clubSeguido != null && partido.participa(clubSeguido)) {
-                        texto = "SEGUIDO - " + texto;
-                    }
-                    resultadosUltimaJornada[numResultadosUltimaJornada] = texto;
-                    numResultadosUltimaJornada++;
-                }
+        if (indiceSeleccion < 1) {
+            indiceSeleccion = 1;
+        }
+        if (indiceSeleccion > totalDisponibles) {
+            indiceSeleccion = totalDisponibles;
+        }
+
+        int indiceReal = indices[indiceSeleccion - 1];
+        Partido partido = listaPartidos[indiceReal];
+        if (partido == null) {
+            return false;
+        }
+
+        partido.simular(true);
+        actualizarTabla(partido);
+        registrarGanador(partido);
+
+        asegurarArraysResultados(listaPartidos.length);
+        guardarResultadoJornada(partido);
+
+        boolean quedan = false;
+        for (int i = 0; i < listaPartidos.length; i++) {
+            Partido p = listaPartidos[i];
+            if (p != null && !p.isJugado()) {
+                quedan = true;
+                break;
             }
         }
 
-        System.out.println("\nRESULTADOS:");
-        for (int i = 0; i < numResultadosUltimaJornada; i++) {
-            System.out.println(" - " + resultadosUltimaJornada[i]);
-        }
+        if (!quedan) {
+            jornadaEnCurso++;
 
-        jornadaEnCurso++;
-
-        if (jornadaEnCurso >= totalJornadas) {
-            setTerminada(true);
-            System.out.println("\nFin de temporada: se han jugado todas las jornadas.");
+            if (jornadaEnCurso >= totalJornadas) {
+                setTerminada(true);
+                System.out.println("\nFin de temporada: se han jugado todas las jornadas.");
+            } else {
+                System.out.println("\nJornada completada. Pasando a la siguiente...");
+            }
         }
 
         return true;
+    }
+
+    public String[] listarPartidosDisponibles() {
+        if (!isGenerada()) {
+            generar();
+        }
+
+        if (haTerminado()) {
+            return new String[0];
+        }
+
+        if (jornadaEnCurso < 0 || jornadaEnCurso >= totalJornadas) {
+            return new String[0];
+        }
+
+        Jornada jornada = jornadas[jornadaEnCurso];
+        if (jornada == null) {
+            return new String[0];
+        }
+
+        Partido[] listaPartidos = jornada.getPartidos();
+        if (listaPartidos == null || listaPartidos.length == 0) {
+            return new String[0];
+        }
+
+        int total = 0;
+        for (int i = 0; i < listaPartidos.length; i++) {
+            Partido p = listaPartidos[i];
+            if (p == null) {
+                continue;
+            }
+            if (p.isJugado()) {
+                continue;
+            }
+            total++;
+        }
+
+        if (total == 0) {
+            return new String[0];
+        }
+
+        String[] lineas = new String[total];
+        int pos = 0;
+        int num = 1;
+
+        for (int i = 0; i < listaPartidos.length; i++) {
+            Partido p = listaPartidos[i];
+            if (p == null) {
+                continue;
+            }
+            if (p.isJugado()) {
+                continue;
+            }
+
+            String texto = num + ") " + p.getEquipoLocal().getNombre() + " vs " + p.getEquipoVisitante().getNombre();
+            lineas[pos] = texto;
+            pos++;
+            num++;
+        }
+
+        return lineas;
     }
 
     @Override
@@ -315,15 +519,11 @@ public class Liga extends Competicion {
             return;
         }
 
-        System.out.println("\n==========================================");
         System.out.println("ULTIMA JORNADA - " + getNombre().toUpperCase());
-        System.out.println("==========================================");
 
         for (int i = 0; i < numResultadosUltimaJornada; i++) {
             System.out.println(" - " + resultadosUltimaJornada[i]);
         }
-
-        System.out.println("==========================================\n");
     }
 
     @Override
@@ -331,49 +531,92 @@ public class Liga extends Competicion {
         return isTerminada();
     }
 
-    public void mostrarClasificacion() {
-        System.out.println("\n==============================================================");
-        System.out.println("CLASIFICACION - " + getNombre().toUpperCase()
-                + " (Jornada " + jornadaEnCurso + "/" + totalJornadas + ")");
-        System.out.println("==============================================================");
+    public void mostrarCalendario() {
+        if (!isGenerada()) {
+            System.out.println("Primero genera el calendario.");
+            return;
+        }
 
-        System.out.printf("%-3s %-22s %3s %3s %3s %3s %4s %4s %4s%n",
-                "#", "CLUB", "PJ", "PG", "PE", "PP", "GF", "GC", "PTS");
+        if (jornadas == null || jornadas.length == 0) {
+            System.out.println("No hay jornadas para mostrar.");
+            return;
+        }
+
+        System.out.println("\n===== CALENDARIO: " + getNombre().toUpperCase() + " =====");
+
+        for (int j = 0; j < jornadas.length; j++) {
+            Jornada jo = jornadas[j];
+            System.out.println("\n--- Jornada " + (j + 1) + " ---");
+
+            if (jo == null) {
+                System.out.println("(Sin jornada creada)");
+            } else {
+                jo.mostrarPartidos();
+            }
+        }
+    }
+
+    public void mostrarClasificacion() {
+        String titulo = "CLASIFICACION - " + getNombre().toUpperCase()
+                + " (Jornada " + jornadaEnCurso + "/" + totalJornadas + ")";
+
+        String[] cab = {"#", "CLUB", "PJ", "PG", "PE", "PP", "GF", "GC", "DG", "PTS"};
 
         int[] orden = new int[totalEquipos];
-        for (int i = 0; i < totalEquipos; i++) orden[i] = i;
+        for (int i = 0; i < totalEquipos; i++) {
+            orden[i] = i;
+        }
 
         for (int i = 0; i < totalEquipos - 1; i++) {
             int mejor = i;
             for (int j = i + 1; j < totalEquipos; j++) {
-                if (esMejor(orden[j], orden[mejor])) mejor = j;
+                if (esMejor(orden[j], orden[mejor])) {
+                    mejor = j;
+                }
             }
             int aux = orden[i];
             orden[i] = orden[mejor];
             orden[mejor] = aux;
         }
 
-        for (int posicion = 0; posicion < totalEquipos; posicion++) {
-            int idx = orden[posicion];
-            System.out.printf("%-3d %-22s %3d %3d %3d %3d %4d %4d %4d%n",
-                    (posicion + 1),
-                    recortar(equipos[idx].getNombre(), 22),
-                    jugados[idx], ganados[idx], empatados[idx], perdidos[idx],
-                    golesFavor[idx], golesContra[idx], puntos[idx]
-            );
+        String[][] filas = new String[totalEquipos][cab.length];
+        for (int pos = 0; pos < totalEquipos; pos++) {
+            int i = orden[pos];
+            int dg = golesFavor[i] - golesContra[i];
+
+            filas[pos][0] = String.valueOf(pos + 1);
+            if (equipos[i] == null) {
+                filas[pos][1] = "-";
+            } else {
+                filas[pos][1] = equipos[i].getNombre();
+            }
+            filas[pos][2] = String.valueOf(jugados[i]);
+            filas[pos][3] = String.valueOf(ganados[i]);
+            filas[pos][4] = String.valueOf(empatados[i]);
+            filas[pos][5] = String.valueOf(perdidos[i]);
+            filas[pos][6] = String.valueOf(golesFavor[i]);
+            filas[pos][7] = String.valueOf(golesContra[i]);
+            filas[pos][8] = String.valueOf(dg);
+            filas[pos][9] = String.valueOf(puntos[i]);
         }
 
-        System.out.println("==============================================================\n");
+        ui.TablaConsola.imprimirTablaCentrada(titulo, cab, filas, 110);
     }
 
     private boolean esMejor(int a, int b) {
-        if (puntos[a] != puntos[b]) return puntos[a] > puntos[b];
+        if (puntos[a] != puntos[b]) {
+            return puntos[a] > puntos[b];
+        }
 
         int difA = golesFavor[a] - golesContra[a];
         int difB = golesFavor[b] - golesContra[b];
-        if (difA != difB) return difA > difB;
+        if (difA != difB) {
+            return difA > difB;
+        }
 
-        if (golesFavor[a] != golesFavor[b]) return golesFavor[a] > golesFavor[b];
+        if (golesFavor[a] != golesFavor[b]) {
+            return golesFavor[a] > golesFavor[b];
+        }
 
         return equipos[a].getNombre().compareToIgnoreCase(equipos[b].getNombre()) < 0;
     }
@@ -385,7 +628,9 @@ public class Liga extends Competicion {
         int idxLocal = indiceEquipo(local);
         int idxVisitante = indiceEquipo(visitante);
 
-        if (idxLocal < 0 || idxVisitante < 0) return;
+        if (idxLocal < 0 || idxVisitante < 0) {
+            return;
+        }
 
         int gLocal = partido.getGolesDelLocal();
         int gVisitante = partido.getGolesDelVisitante();
@@ -403,12 +648,10 @@ public class Liga extends Competicion {
             ganados[idxLocal]++;
             perdidos[idxVisitante]++;
             puntos[idxLocal] += 3;
-
         } else if (gLocal < gVisitante) {
             ganados[idxVisitante]++;
             perdidos[idxLocal]++;
             puntos[idxVisitante] += 3;
-
         } else {
             empatados[idxLocal]++;
             empatados[idxVisitante]++;
@@ -418,18 +661,26 @@ public class Liga extends Competicion {
     }
 
     private int indiceEquipo(Club equipo) {
-        if (equipo == null) return -1;
+        if (equipo == null) {
+            return -1;
+        }
 
         for (int i = 0; i < totalEquipos; i++) {
-            if (equipos[i] == equipo) return i;
+            if (equipos[i] == equipo) {
+                return i;
+            }
         }
 
         String nombre = equipo.getNombre();
-        if (nombre == null) return -1;
+        if (nombre == null) {
+            return -1;
+        }
 
         for (int i = 0; i < totalEquipos; i++) {
             if (equipos[i] != null && equipos[i].getNombre() != null) {
-                if (equipos[i].getNombre().equalsIgnoreCase(nombre)) return i;
+                if (equipos[i].getNombre().equalsIgnoreCase(nombre)) {
+                    return i;
+                }
             }
         }
 
@@ -458,7 +709,9 @@ public class Liga extends Competicion {
     }
 
     private void rotarOrden(Club[] lista) {
-        if (lista.length <= 2) return;
+        if (lista.length <= 2) {
+            return;
+        }
 
         Club ultimo = lista[lista.length - 1];
         for (int i = lista.length - 1; i > 1; i--) {
@@ -468,28 +721,86 @@ public class Liga extends Competicion {
     }
 
     private String recortar(String s, int max) {
-        if (s == null) return "";
-        if (s.length() <= max) return s;
+        if (s == null) {
+            return "";
+        }
+        if (s.length() <= max) {
+            return s;
+        }
         return s.substring(0, max);
     }
 
-    public Club getEquipoEnPosicion(int pos) {
-        if (pos < 1 || pos > totalEquipos) return null;
-
-        int[] orden = new int[totalEquipos];
-        for (int i = 0; i < totalEquipos; i++) orden[i] = i;
-
-        for (int i = 0; i < totalEquipos - 1; i++) {
-            int mejor = i;
-            for (int j = i + 1; j < totalEquipos; j++) {
-                if (esMejor(orden[j], orden[mejor])) mejor = j;
-            }
-            int aux = orden[i];
-            orden[i] = orden[mejor];
-            orden[mejor] = aux;
+    private void registrarGanador(Partido partido) {
+        if (partido == null) {
+            return;
         }
 
-        return equipos[orden[pos - 1]];
+        Club ganador = null;
+
+        if (partido.getGolesDelLocal() > partido.getGolesDelVisitante()) {
+            ganador = partido.getEquipoLocal();
+        } else if (partido.getGolesDelLocal() < partido.getGolesDelVisitante()) {
+            ganador = partido.getEquipoVisitante();
+        }
+
+        if (ganador == null) {
+            return;
+        }
+        if (ganadoresUltimaJornada == null) {
+            return;
+        }
+        if (numGanadoresUltimaJornada >= ganadoresUltimaJornada.length) {
+            return;
+        }
+
+        ganadoresUltimaJornada[numGanadoresUltimaJornada] = ganador;
+        numGanadoresUltimaJornada++;
+    }
+
+    @Override
+    public Club[] getGanadoresUltimaJornada() {
+        Club[] res = new Club[numGanadoresUltimaJornada];
+        for (int i = 0; i < numGanadoresUltimaJornada; i++) {
+            res[i] = ganadoresUltimaJornada[i];
+        }
+        return res;
+    }
+
+    private void resetResultados() {
+        numResultadosUltimaJornada = 0;
+        numResultadosUltimoEquipo = 0;
+    }
+
+    private void asegurarArraysResultados(int tam) {
+        if (resultadosUltimaJornada == null || resultadosUltimaJornada.length < tam) {
+            resultadosUltimaJornada = new String[tam];
+        }
+        if (resultadosUltimoEquipo == null || resultadosUltimoEquipo.length < tam) {
+            resultadosUltimoEquipo = new String[tam];
+        }
+        if (ganadoresUltimaJornada == null || ganadoresUltimaJornada.length < tam) {
+            ganadoresUltimaJornada = new Club[tam];
+        }
+    }
+
+    private void guardarResultadoJornada(Partido partido) {
+        if (partido == null) {
+            return;
+        }
+        if (numResultadosUltimaJornada < resultadosUltimaJornada.length) {
+            resultadosUltimaJornada[numResultadosUltimaJornada] = partido.toString();
+            numResultadosUltimaJornada++;
+        }
+    }
+
+    private void guardarResultadoEquipo(Partido partido) {
+        if (partido == null) {
+            return;
+        }
+        if (numResultadosUltimoEquipo < resultadosUltimoEquipo.length) {
+            resultadosUltimoEquipo[numResultadosUltimoEquipo] = partido.toString();
+            numResultadosUltimoEquipo++;
+        }
     }
 
     @Override
@@ -504,13 +815,21 @@ public class Liga extends Competicion {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) return false;
-        if (!(o instanceof Liga)) return false;
+        if (o == null) {
+            return false;
+        }
+        if (o.getClass() != Liga.class) {
+            return false;
+        }
 
         Liga otra = (Liga) o;
 
-        if (getNombre() == null && otra.getNombre() == null) return true;
-        if (getNombre() == null || otra.getNombre() == null) return false;
+        if (getNombre() == null && otra.getNombre() == null) {
+            return true;
+        }
+        if (getNombre() == null || otra.getNombre() == null) {
+            return false;
+        }
 
         return getNombre().equalsIgnoreCase(otra.getNombre());
     }
